@@ -1,0 +1,56 @@
+#+TITLE:Lacquer 
+
+Lacquer is a util that switches theme and to configure cache ;)
+ps: using it with `which-key' is recommended.
+
+* Features
+- Use both the theme seletor and the shortcut key to switch themes.
+- Load previous theme after restarting the emacs.
+- Each theme can be configured individually.
+- Download unused themes automatically with package.el.
+- Generate interactive function automatically.
+
+* Screencast
+[[./selector.png]]
+
+[[./shortcut-key.png]]
+ 
+* Installation
+Download el file to your load-path.
+
+* Usage
+#+BEGIN_SRC lisp
+  (use-package lacquer
+      :ensure nil
+      :load-path "~/.emacs.d/site-lisp/lacquer"
+      :hook
+      (after-init . lacquer-mode)
+      :custom
+      (lacquer/theme-list kumo/theme-list))
+#+END_SRC
+
+* Customization
+| Variable               | Default                                        | type   | Description                                                 |
+|------------------------+------------------------------------------------+--------+-------------------------------------------------------------|
+| lacquer/theme-list     | '((monokai-theme monokai))                     | list   | Theme list. E.g: '((theme-package-name theme-name config)). |
+| lacquer/default-theme  | 'monokai                                       | list   | Default theme. E.g: '(theme-package-name theme)             |
+| lacquer/theme-cache    | "~/.emacs.d/.theme"                            | string | Path of theme cache.                                        |
+| lacquer/prefix-key     | "C-c T"                                        | string | Trigger of prefix key.                                      |
+| lacquer/keys-map-index | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list   | Keys map.                                                   |
+
+* Command
+| Command               | Description                            |
+|-----------------------+----------------------------------------|
+| lacquer-current-theme | Print current theme.                   |
+| lacquer-selector      | Open theme selector in the minibuffer. |
+
+* License
+#+BEGIN_QUOTE
+Copyright (C) 2012-2020 Nicholas M. Van Horn
+
+Author: dingansich_kum0 <zy.hua1122@outlook.com> Keywords: theme switch.
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+#+END_QUOTE
