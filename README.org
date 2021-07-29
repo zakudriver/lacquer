@@ -1,7 +1,9 @@
 #+TITLE:Lacquer 
 
 Lacquer is a util that switches theme and to configure cache ;)
+#+BEGIN_QUOTE
 ps: using it with `which-key' is recommended.
+#+END_QUOTE
 
 * Features
 - Use both the theme seletor and the shortcut key to switch themes.

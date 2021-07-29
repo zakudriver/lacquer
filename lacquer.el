@@ -1,4 +1,4 @@
-;;; lacquer.el --- Package description (Theme switch and save)  -*- lexical-binding: t; -*-
+;;; lacquer.el --- Package description (a util that switches theme and to configure cache)  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
@@ -74,6 +74,7 @@
 
 (require 'cl-lib)
 (require 'ivy)
+(require 'lacquer-utils)
 
 ;;;; Customization
 
@@ -104,17 +105,6 @@ Optional: config.Any function."
 (defcustom lacquer/prefix-key "C-c T"
   "Trigger of prefix key."
   :type 'string)
-
-
-(defun lacquer-generate-keys-index-list (&optional prefix)
-  "Generate keys index.
-PREFIX is optional string."
-  (let ((func 'number-to-string))
-    (when (stringp prefix)
-      (setq func
-            (lambda (i)
-              (concat prefix (number-to-string i)))))
-    (mapcar func (number-sequence 1 9))))
 
 
 (defcustom lacquer/keys-map-index
@@ -242,7 +232,7 @@ THEME is a list.  e.g: '(theme-package-name theme-name config)."
          if (eq (nth 1 v) lacquer/current-theme)
          return i
          else
-         do (incf i)
+         do (cl-incf i)
          finally return i)
 
 
@@ -250,24 +240,25 @@ THEME is a list.  e.g: '(theme-package-name theme-name config)."
 (defun lacquer-selector ()
   "Theme selector."
   (interactive)
-  (let* ((selected (cl-loop with i = 0
-                            for v in lacquer/theme-list
-                            if (eq (nth 1 v) lacquer/current-theme)
-                            return i
-                            else
-                            do (incf i)
-                            finally return i))
-         (func-str (ivy-read (format "Current theme is <%s>. Please choose: " (symbol-name lacquer/current-theme))
-                             lacquer/theme-name-list
-                             :sort nil
-                             :require-match t
-                             :preselect selected
-                             ))
-         (func (intern func-str)))
-    (if (fboundp func)
-        (funcall func)
-      (message (format "<%s> is no existing." func-str)))
-    ))
+  (with-eval-after-load 'ivy
+    (let* ((selected (cl-loop with i = 0
+                              for v in lacquer/theme-list
+                              if (eq (nth 1 v) lacquer/current-theme)
+                              return i
+                              else
+                              do (cl-incf i)
+                              finally return i))
+           (func-str (ivy-read (format "Current theme is <%s>. Please choose: " (symbol-name lacquer/current-theme))
+                               lacquer/theme-name-list
+                               :sort nil
+                               :require-match t
+                               :preselect selected
+                               ))
+           (func (intern func-str)))
+      (if (fboundp func)
+          (funcall func)
+        (message (format "<%s> is no existing." func-str)))
+      )))
 
 ;;;;; Keymaps
 
@@ -278,7 +269,7 @@ MAP is keymap."
            for v in lacquer/theme-list
            do (progn
                 (define-key map (kbd (concat lacquer/prefix-key " " (nth i lacquer/keys-map-index)))  (nth 1 v))
-                (incf i))
+                (cl-incf i))
            finally return map
            ))
 
