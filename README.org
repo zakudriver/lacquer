@@ -35,7 +35,7 @@ Download el file to your load-path.
 | Variable               | Default                                        | type   | Description                                                 |
 |------------------------+------------------------------------------------+--------+-------------------------------------------------------------|
 | lacquer/theme-list     | '((monokai-theme monokai))                     | list   | Theme list. E.g: '((theme-package-name theme-name config)). |
-| lacquer/default-theme  | 'monokai                                       | list   | Default theme. E.g: '(theme-package-name theme)             |
+| lacquer/default-theme  | 'monokai                                       | list   | Default theme.             |
 | lacquer/theme-cache    | "~/.emacs.d/.theme"                            | string | Path of theme cache.                                        |
 | lacquer/prefix-key     | "C-c T"                                        | string | Trigger of prefix key.                                      |
 | lacquer/keys-map-index | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list   | Keys map.                                                   |
