@@ -28,7 +28,15 @@ Download el file to your load-path.
       :hook
       (after-init . lacquer-mode)
       :custom
-      (lacquer/theme-list kumo/theme-list))
+      (lacquer/theme-list '((monokai-theme monokai)
+                            (monokai-pro-theme monokai-pro)
+                            (dracula-theme dracula)
+                            (doom-themes doom-one-light)
+                            (doom-themes doom-vibrant)
+                            (doom-themes doom-nord)
+                            (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
+                            (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))
+                            )))
 #+END_SRC
 
 * Customization
