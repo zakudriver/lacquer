@@ -74,7 +74,8 @@
 
 (require 'cl-lib)
 (require 'ivy)
-(require 'lacquer-utils)
+(require 'utils)
+(require 'setting)
 
 ;;;; Customization
 
@@ -89,20 +90,43 @@
 E.g: '((theme-package-name theme-name config)).
 Required: theme-package-name theme-name.
 Optional: config.Any function."
-  :type 'lisp)
+  :type 'list)
 
 
 (defcustom lacquer/default-theme 'monokai
-  "Default theme name."
+  "Default theme."
   :type 'symbol)
 
 
-(defcustom lacquer/theme-cache "~/.emacs.d/.theme"
-  "Path of theme cache."
+(defcustom lacquer/font-list '(Menlo Fira\ Code)
+  "Font list.
+E.g: '((theme-package-name theme-name config)).
+Required: theme-package-name theme-name.
+Optional: config.Any function."
+  :type 'lisp)
+
+
+(defcustom lacquer/default-font 'Menlo
+  "Default font."
+  :type 'symbol)
+
+
+(defcustom lacquer/default-font-size 135
+  "Default font size."
+  :type 'integer)
+
+
+(defcustom lacquer/cache "~/.emacs.d/.lacquer"
+  "Path of cache."
   :type 'string)
 
 
-(defcustom lacquer/prefix-key "C-c T"
+(defcustom lacquer/theme-prefix-key "C-c T"
+  "Trigger theme of prefix key."
+  :type 'string)
+
+
+(defcustom lacquer/font-prefix-key "C-c F"
   "Trigger of prefix key."
   :type 'string)
 
@@ -115,8 +139,23 @@ Optional: config.Any function."
   :type 'list)
 
 
-(defcustom lacquer/selector-key "C-c T S"
-  "Selector bind key."
+(defcustom lacquer/theme-selector-key "C-c T S"
+  "Theme selector bind key."
+  :type 'string)
+
+
+(defcustom lacquer/font-selector-key "C-c F S"
+  "Font selector bind key."
+  :type 'string)
+
+
+(defcustom lacquer/font-increase-key "C-c F +"
+  "Font increase bind key."
+  :type 'string)
+
+
+(defcustom lacquer/font-decrease-key "C-c F _"
+  "Font increase bind key."
   :type 'string)
 
 
@@ -124,68 +163,49 @@ Optional: config.Any function."
   "Current theme bind key."
   :type 'string)
 
+
+(defcustom lacquer/current-font-key "C-c F 0"
+  "Current theme bind key."
+  :type 'string)
+
+
+(defcustom lacquer/font-size-step 5
+  "Current theme bind key."
+  :type 'integer)
+
 ;;;; Variables
 
 (defvar lacquer/started nil
   "Lacquer mode has started.")
 
 
-(defvar lacquer/current-theme nil
-  "Current theme name.")
-
-
 (defvar lacquer/theme-name-list (mapcar #'(lambda (i) (nth 1 i)) lacquer/theme-list)
   "Theme name list.")
 
+
+(defvar lacquer/setting nil
+  "Setting instance.")
+
 ;;;;; Private
 
-(defun lacquer-set-current-theme ()
-  "Set current theme."
-  (let ((theme
-         (lacquer-read-cache)))
-    (setq lacquer/current-theme
-          (if (lacquer-theme-is-existing theme) theme lacquer/default-theme))
-    ))
+(defun lacquer-make-setting ()
+  "Make setting instance."
+  (setq lacquer/setting
+        (make-instance 'lacquer-setting-cls :cls-cache-path lacquer/cache
+                       :cls-theme-list lacquer/theme-list
+                       :cls-font-list lacquer/font-list
+                       :cls-cache-str (lacquer-read-path lacquer/cache)
+                       :cls-setting (list (cons "theme" lacquer/default-theme)
+                                          (cons "font" lacquer/default-font)
+                                          (cons "font-size" lacquer/default-font-size)))
+        )
+  (cls-init lacquer/setting)
+  )
 
+;; Theme
 
-(defun lacquer-write-cache (theme)
-  "Write theme name to cache.
-THEME: theme symbol name."
-  (write-region (symbol-name theme) nil lacquer/theme-cache))
-
-
-(defun lacquer-read-cache ()
-  "Read theme symbol from cache."
-  (when (file-exists-p lacquer/theme-cache)
-    (intern
-     (with-temp-buffer (insert-file-contents lacquer/theme-cache) (buffer-string)))
-    ))
-
-
-(defun lacquer-write-defualt-theme ()
-  "Write default theme."
-  (lacquer-write-cache lacquer/default-theme))
-
-
-(defun lacquer-theme-is-existing (name)
-  "Check the theme is exists.
-NAME is theme symbol mame."
-  (cl-loop for i in lacquer/theme-list
-           when (eq (nth 1 i) name)
-           return t))
-
-
-(defun lacquer-read-theme ()
-  "Read theme from cache."
-  (let ((theme (lacquer-read-cache)))
-    (if (lacquer-theme-is-existing theme)
-        theme
-      (lacquer-write-defualt-theme) lacquer/default-theme)
-    ))
-
-
-(defmacro lacquer-factory-macro (name load-name &rest config)
-  "Factory macro.
+(defmacro lacquer-theme-factory-macro (name load-name &rest config)
+  "Theme factory macro.
 NAME is theme package name.
 LOAD-NAME is theme name.
 CONFIG is theme config."
@@ -193,31 +213,55 @@ CONFIG is theme config."
      (unless (package-installed-p (quote ,name))
        (package-install (quote ,name)))
      (when (symbolp (quote ,load-name))
-       (disable-theme lacquer/current-theme)
+       (disable-theme (cls-get lacquer/setting "theme"))
        (load-theme (quote ,load-name) t)
        ,@config
-       
-       (setq lacquer/current-theme  (quote ,load-name))
-       (lacquer-write-cache (quote ,load-name))
+
+       (cls-set lacquer/setting "theme" (quote ,load-name))
        (message (format "<%s> loaded successfully."
                         (symbol-name (quote ,load-name)))))
      ))
 
 
-(defun lacquer-func-factory (theme)
-  "Interactive function factory.
-THEME is a list.  e.g: '(theme-package-name theme-name config)."
-  `(defun ,(nth 1 theme) ()
-     "Theme."
+(defun lacquer-theme-factory (theme)
+  "Make params of theme factory function by THEME."
+  (lacquer-interactive-factory (nth 1 theme) `(lacquer-theme-factory-macro ,@theme)))
+
+;; Font
+
+(defmacro lacquer-font-factory-macro (font)
+  "Font factory macro by FONT."
+  `(progn
+     (set-face-attribute 'default nil :font (symbol-name (quote ,font)))
+     (cls-set lacquer/setting "font" (quote ,font))
+     ))
+
+
+(defun lacquer-font-factory (font)
+  "Make params of theme factory function by FONT."
+  (lacquer-interactive-factory font `(lacquer-font-factory-macro ,font)))
+
+
+(defun lacquer-interactive-factory (name body)
+  "Generate interactive function factory by NAME and BODY."
+  `(defun ,name ()
+     "Lacquer interactive."
      (interactive)
-     (unless (eq (quote ,(nth 1 theme)) lacquer/current-theme)
-       (lacquer-factory-macro ,@theme)
-       )))
+     ,body
+     ))
 
 
-(defmacro lacquer-func-macro-factory ()
-  "Theme function macro factory."
-  `(progn ,@(mapcar 'lacquer-func-factory lacquer/theme-list)))
+(defmacro lacquer-macro-factory (list func)
+  "Theme function macro factory by LIST and FUNC."
+  `(progn ,@(mapcar func (eval list))))
+
+;; Font-size
+
+(defun lacquer-font-size-operate (size)
+  "Change font SIZE."
+  (set-face-attribute 'default nil :height size)
+  (cls-set lacquer/setting "font-size" size)
+  (message "Current font size: <%s>." size))
 
 ;;;;; Public
 
@@ -225,50 +269,90 @@ THEME is a list.  e.g: '(theme-package-name theme-name config)."
 (defun lacquer-current-theme ()
   "Current theme."
   (interactive)
-  (message "Current theme: <%s>." (symbol-name lacquer/current-theme)))
-
-(cl-loop with i = 0
-         for v in lacquer/theme-list
-         if (eq (nth 1 v) lacquer/current-theme)
-         return i
-         else
-         do (cl-incf i)
-         finally return i)
+  (message "Current theme: <%s>." (symbol-name (cls-get lacquer/setting "theme"))))
 
 
 ;;;###autoload
-(defun lacquer-selector ()
+(defun lacquer-current-font ()
+  "Current font."
+  (interactive)
+  (message "Current font: <%s>." (symbol-name (cls-get lacquer/setting "font"))))
+
+;; Selector
+
+(defun make-selector (list current select-list prompt &optional which)
+  "Make selector by LIST of theme or font, CURRENT, SELECT-LIST and PROMPT or WHICH function."
+  (let* ((selected (cl-loop with i = 0
+                            for v in list
+                            if (eq (if (functionp which) (funcall which v) v) current)
+                            return i
+                            else
+                            do (cl-incf i)
+                            finally return i))
+         (func-str (ivy-read prompt
+                             select-list
+                             :sort nil
+                             :require-match t
+                             :preselect selected
+                             ))
+         (func (intern func-str)))
+    (if (fboundp func)
+        (funcall func)
+      (message (format "<%s> is no existing." func-str)))
+    )
+  )
+
+
+;;;###autoload
+(defun lacquer-theme-selector ()
   "Theme selector."
   (interactive)
   (with-eval-after-load 'ivy
-    (let* ((selected (cl-loop with i = 0
-                              for v in lacquer/theme-list
-                              if (eq (nth 1 v) lacquer/current-theme)
-                              return i
-                              else
-                              do (cl-incf i)
-                              finally return i))
-           (func-str (ivy-read (format "Current theme is <%s>. Please choose: " (symbol-name lacquer/current-theme))
-                               lacquer/theme-name-list
-                               :sort nil
-                               :require-match t
-                               :preselect selected
-                               ))
-           (func (intern func-str)))
-      (if (fboundp func)
-          (funcall func)
-        (message (format "<%s> is no existing." func-str)))
-      )))
+    (make-selector
+     lacquer/theme-list
+     (cls-get lacquer/setting "theme")
+     lacquer/theme-name-list
+     (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "theme")))
+     (lambda (v) (nth 1 v)))
+    ))
+
+
+;;;###autoload
+(defun lacquer-font-selector ()
+  "Theme selector."
+  (interactive)
+  (with-eval-after-load 'ivy
+    (make-selector
+     lacquer/font-list
+     (cls-get lacquer/setting "font")
+     lacquer/font-list
+     (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "font")))
+     )))
+
+
+;;;###autoload
+(defun lacquer-font-size-increase ()
+  "Font size increase."
+  (interactive)
+  (let ((size (+ (cls-get lacquer/setting "font-size") lacquer/font-size-step)))
+    (lacquer-font-size-operate size)))
+
+
+;;;###autoload
+(defun lacquer-font-size-decrease ()
+  "Font size decrease."
+  (interactive)
+  (let ((size (- (cls-get lacquer/setting "font-size") lacquer/font-size-step)))
+    (lacquer-font-size-operate size)))
 
 ;;;;; Keymaps
 
-(defun lacquer-generate-map (map)
-  "Generate key map.
-MAP is keymap."
+(defun lacquer-generate-map (map list prefix-key &optional which)
+  "Generate key map by key MAP, LIST, PREFIX-KEY or WHICH func."
   (cl-loop with i = 0
-           for v in lacquer/theme-list
+           for v in list
            do (progn
-                (define-key map (kbd (concat lacquer/prefix-key " " (nth i lacquer/keys-map-index)))  (nth 1 v))
+                (define-key map (kbd (concat prefix-key " " (nth i lacquer/keys-map-index))) (if (functionp which) (funcall which v) v))
                 (cl-incf i))
            finally return map
            ))
@@ -279,15 +363,32 @@ MAP is keymap."
 
 
 (define-key lacquer-mode-map (kbd lacquer/current-theme-key) 'lacquer-current-theme)
-(define-key lacquer-mode-map (kbd lacquer/selector-key) 'lacquer-selector)
+(define-key lacquer-mode-map (kbd lacquer/current-font-key) 'lacquer-current-font)
+(define-key lacquer-mode-map (kbd lacquer/theme-selector-key) 'lacquer-theme-selector)
+(define-key lacquer-mode-map (kbd lacquer/font-selector-key) 'lacquer-font-selector)
+(define-key lacquer-mode-map (kbd lacquer/font-increase-key) 'lacquer-font-size-increase)
+(define-key lacquer-mode-map (kbd lacquer/font-decrease-key) 'lacquer-font-size-decrease)
 
 ;; Minor-mode
 
 (defun lacquer-start-up ()
   "Start up."
-  (lacquer-func-macro-factory)
-  (lacquer-generate-map lacquer-mode-map)
-  (funcall (lacquer-read-theme))
+  (lacquer-make-setting)
+  
+  (lacquer-macro-factory lacquer/theme-list lacquer-theme-factory)
+  (lacquer-macro-factory lacquer/font-list lacquer-font-factory)
+  
+  (lacquer-generate-map
+   lacquer-mode-map
+   lacquer/theme-list
+   lacquer/theme-prefix-key
+   (lambda (v) (nth 1 v)))
+  (lacquer-generate-map
+   lacquer-mode-map
+   lacquer/font-list
+   lacquer/font-prefix-key)
+  
+  (cls-call lacquer/setting)
   (setq lacquer/started t))
 
 
