@@ -37,7 +37,7 @@
 
 
 (cl-defmethod cls-parse-cache ((this lacquer-setting-cls) key)
-  "Parse THIS's cache-str by KEY.
+  "Parse THIS's string of cache by KEY.
 Return string."
   (string-replace (format "%s=" key) "" (progn
                                           (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
@@ -46,9 +46,7 @@ Return string."
 
 
 (cl-defmethod cls-check-setting ((this lacquer-setting-cls) key value)
-  "Get current setting(theme, font and font-size) by KEY.
-THIS is lacquer-cls.
-Return symbol of theme or font, int of font-size."
+  "Check THIS's setting value by KEY and VALUE, and return right value."
   (cond ((string= key "theme")
          (let ((theme (intern value)))
            (if (lacquer-is-existing (oref this cls-theme-list) theme (lambda (v) (nth 1 v)))
@@ -71,7 +69,7 @@ Return symbol of theme or font, int of font-size."
 
 
 (cl-defmethod cls-call ((this lacquer-setting-cls))
-  "Init THIS."
+  "Initialization call THIS's theme, font and font-sie."
   (cl-loop for (k . v) in (oref this cls-setting)
            do (if (string= k "font-size")
                   (set-face-attribute 'default nil :height v)
@@ -86,7 +84,7 @@ Return symbol of theme or font, int of font-size."
 
 
 (cl-defmethod cls-set ((this lacquer-setting-cls) key value)
-  "Set THIS's current setting(theme, font and font-size) by KEY and VALUE."
+  "Set KEY and VALUE to THIS's setting(theme, font and font-size)."
   (unless (eq value (cdr
                      (assoc key (oref this cls-setting))))
     (setf (cdr

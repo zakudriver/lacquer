@@ -50,18 +50,31 @@
 
 ;;;; Tips
 
-;;  (use-package lacquer
-;;    :ensure nil
-;;    :load-path "~/.emacs.d/site-lisp/lacquer"
-;;    :hook
-;;    (after-init . lacquer-mode)
-;;    :custom
-;;    (lacquer/theme-list '((monokai-theme monokai)
-;; (monokai-pro-theme monokai-pro)
-;; (dracula-theme dracula (setq xxx xxx))
-;; (doom-themes doom-one-light)
-;; (doom-themes doom-vibrant)
-;; (doom-themes doom-nord))))
+;; (use-package lacquer
+;;     :ensure nil
+;;     :load-path "~/.emacs.d/site-lisp/lacquer"
+;;     :hook
+;;     (after-init . lacquer-mode)
+;;     :custom
+;;     (lacquer/cache "~/.emacs.d/lacquer")
+;;     (lacquer/theme-list '((monokai-theme monokai)
+;;                           (monokai-pro-theme monokai-pro)
+;;                           (dracula-theme dracula)
+;;                           (doom-themes doom-one-light)
+;;                           (doom-themes doom-vibrant)
+;;                           (doom-themes doom-nord)
+;;                           (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
+;;                           (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))))
+;;     (lacquer/font-list '(Menlo
+;;                          Roboto\ Mono
+;;                          Anonymous\ Pro
+;;                          FantasqueSansMono
+;;                          FiraMono
+;;                          Fira\ Code
+;;                          Operator\ Mono
+;;                          Inconsolata
+;;                          Iosevka))
+;;     (lacquer/default-font-size 130))
 
 ;;;; Credits
 
@@ -206,9 +219,9 @@ Optional: config.Any function."
 
 (defmacro lacquer-theme-factory-macro (name load-name &rest config)
   "Theme factory macro.
-NAME is theme package name.
-LOAD-NAME is theme name.
-CONFIG is theme config."
+NAME: theme package name.
+LOAD-NAME: theme name.
+CONFIG: theme config."
   `(progn
      (unless (package-installed-p (quote ,name))
        (package-install (quote ,name)))
@@ -252,7 +265,7 @@ CONFIG is theme config."
 
 
 (defmacro lacquer-macro-factory (list func)
-  "Theme function macro factory by LIST and FUNC."
+  "Theme function macro factory by LIST and callback FUNC."
   `(progn ,@(mapcar func (eval list))))
 
 ;; Font-size
