@@ -87,9 +87,12 @@ Return symbol of theme or font, int of font-size."
 
 (cl-defmethod cls-set ((this lacquer-setting-cls) key value)
   "Set THIS's current setting(theme, font and font-size) by KEY and VALUE."
-  (setf (cdr
-         (assoc key (oref this cls-setting))) value)
-  (cls-write-cache this))
+  (let ((pre (cdr
+              (assoc key (oref this cls-setting)))))
+    (unless (eq value pre)
+      (setf pre value)
+      (cls-write-cache this)
+      )))
 
 
 (cl-defmethod cls-write-cache ((this lacquer-setting-cls))

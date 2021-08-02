@@ -1,21 +1,25 @@
 #+TITLE:Lacquer 
 
-Lacquer is a util that switches theme and to configure cache ;)
+Lacquer is a util that switches theme/font/font-size and to configure cache ;)
 #+BEGIN_QUOTE
 ps: using it with `which-key' is recommended.
 #+END_QUOTE
 
 * Features
-- Use both the theme seletor and the shortcut key to switch themes.
-- Load previous theme after restarting the emacs.
+- Use both the seletor and the shortcut key to switch themes/font.
+- Load previous theme/font/font-size after restarting the emacs.
 - Each theme can be configured individually.
 - Download unused themes automatically with package.el.
 - Generate interactive function automatically.
 
 * Screencast
-[[./selector.png]]
+[[./theme-selector.png]]
 
-[[./shortcut-key.png]]
+[[./theme-keys.png]]
+
+[[./font-selector.png.png]]
+
+[[./font-keys.png]]
  
 * Installation
 Download el file to your load-path.
@@ -28,6 +32,7 @@ Download el file to your load-path.
       :hook
       (after-init . lacquer-mode)
       :custom
+      (lacquer/cache "~/.emacs.d/lacquer")
       (lacquer/theme-list '((monokai-theme monokai)
                             (monokai-pro-theme monokai-pro)
                             (dracula-theme dracula)
@@ -35,23 +40,41 @@ Download el file to your load-path.
                             (doom-themes doom-vibrant)
                             (doom-themes doom-nord)
                             (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
-                            (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))
-                            )))
+                            (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))))
+      (lacquer/font-list '(Menlo
+                           Roboto\ Mono
+                           Anonymous\ Pro
+                           FantasqueSansMono
+                           FiraMono
+                           Fira\ Code
+                           Operator\ Mono
+                           Inconsolata
+                           Iosevka))
+      (lacquer/default-font-size 130))
 #+END_SRC
 
 * Customization
-| Variable               | Default                                        | type   | Description                                                 |
-|------------------------+------------------------------------------------+--------+-------------------------------------------------------------|
-| lacquer/theme-list     | '((monokai-theme monokai))                     | list   | Theme list. E.g: '((theme-package-name theme-name config)). |
-| lacquer/default-theme  | 'monokai                                       | list   | Default theme.             |
-| lacquer/theme-cache    | "~/.emacs.d/.theme"                            | string | Path of theme cache.                                        |
-| lacquer/prefix-key     | "C-c T"                                        | string | Trigger of prefix key.                                      |
-| lacquer/keys-map-index | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list   | Keys map.                                                   |
+| Variable                  | Default                                        | type    | Description                                                 |
+|---------------------------+------------------------------------------------+---------+-------------------------------------------------------------|
+| lacquer/theme-list        | '((monokai-theme monokai))                     | list    | Theme list. E.g: '((theme-package-name theme-name config)). |
+| lacquer/default-theme     | 'monokai                                       | list    | Default theme.                                              |
+| lacquer/cache             | "~/.emacs.d/.theme"                            | string  | Path of theme cache.                                        |
+| lacquer/keys-map-index    | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list    | Keys map.                                                   |
+| lacquer/font-list         | '(Menlo Fira\ Code)                            | list    | Font list. E.g: '(font-name).                               |
+| lacquer/default-font      | 'Menlo                                         | symbol  | Default font.                                               |
+| lacquer/default-font-size | 135                                            | integer | Default font size.                                          |
+| lacquer/theme-prefix-key  | "C-c T"                                        | string  | Trigger theme of prefix key.                                |
+| lacquer/font-prefix-key   | "C-c F"                                        | string  | Trigger font of prefix key.                                 |
+| lacquer/font-size-step    | 5                                              | integer | Change font size of step.                                   |
 
 * Command
-| Command               | Description                            |
-|-----------------------+----------------------------------------|
-| lacquer-current-theme | Print current theme.                   |
-| lacquer-selector      | Open theme selector in the minibuffer. |
+| Command                    | Description                            |
+|----------------------------+----------------------------------------|
+| lacquer-current-theme      | Print current theme.                   |
+| lacquer-current-font       | Print current font.                    |
+| lacquer-theme-selector     | Open theme selector in the minibuffer. |
+| lacquer-font-selector      | Open font selector in the minibuffer.  |
+| lacquer-font-size-increase | Font size increase.                    |
+| lacquer-font-size-decrease | Font size decrease.                    |
 
 ** [[http://www.gnu.org/licenses/][License]]

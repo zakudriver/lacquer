@@ -103,7 +103,7 @@ Optional: config.Any function."
 E.g: '((theme-package-name theme-name config)).
 Required: theme-package-name theme-name.
 Optional: config.Any function."
-  :type 'lisp)
+  :type 'list)
 
 
 (defcustom lacquer/default-font 'Menlo
@@ -170,7 +170,7 @@ Optional: config.Any function."
 
 
 (defcustom lacquer/font-size-step 5
-  "Current theme bind key."
+  "Change font size of step."
   :type 'integer)
 
 ;;;; Variables
@@ -305,7 +305,7 @@ CONFIG is theme config."
 
 ;;;###autoload
 (defun lacquer-theme-selector ()
-  "Theme selector."
+  "Open theme selector in the minibuffer."
   (interactive)
   (with-eval-after-load 'ivy
     (make-selector
@@ -319,7 +319,7 @@ CONFIG is theme config."
 
 ;;;###autoload
 (defun lacquer-font-selector ()
-  "Theme selector."
+  "Open font selector in the minibuffer."
   (interactive)
   (with-eval-after-load 'ivy
     (make-selector
