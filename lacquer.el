@@ -23,15 +23,6 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;; Commentary
-
-;; Lacquer is a util that switches theme/font/font-size and to configure cache.
-;; Use both the seletor and the shortcut key to switch themes/font.
-;; Load previous theme/font/font-size after restarting the emacs.
-;; Each theme can be configured individually.
-;; Download unused themes automatically with package.el.
-;; Generate interactive function automatically.
-
 ;;; Installation
 
 ;; put this file in your load-path.
@@ -77,10 +68,15 @@
 ;;                          Iosevka))
 ;;     (lacquer/default-font-size 130))
 
-;;;; Credits
 
-;; This package would not have been possible without the following
-;; packages: cl-lib, support for cl utils, and ivy, support for ivy-read.
+;;; Commentary:
+
+;; Lacquer is a util that switches theme/font/font-size and to configure cache.
+;; Use both the seletor and the shortcut key to switch themes/font.
+;; Load previous theme/font/font-size after restarting the Emacs.
+;; Each theme can be configured individually.
+;; Download unused themes automatically with package.el.
+;; Generate interactive function automatically.
 
 ;;; Code:
 
