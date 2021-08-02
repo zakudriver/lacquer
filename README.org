@@ -77,7 +77,7 @@ Download el file to your load-path.
 | lacquer-font-size-increase | Font size increase.                    |
 | lacquer-font-size-decrease | Font size decrease.                    |
 
-* TODO
+* TODOList
 - Distinguish between light and dark theme.
 - Switch theme according to time.
 
