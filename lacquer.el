@@ -1,12 +1,12 @@
-;;; lacquer.el --- Package description (a util that switches theme and to configure cache)  -*- lexical-binding: t; -*-
+;;; lacquer.el --- A util that switches theme/font and to configure cache  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
 ;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
 ;; URL: https://example.com/package-name.el
-;; Version: 0.1-pre
+;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))
-;; Keywords: theme switch
+;; Keywords: tools
 
 ;; This file is not part of GNU Emacs.
 
@@ -23,32 +23,33 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;;; Installation
+;;; Commentary
+
+;; Lacquer is a util that switches theme/font/font-size and to configure cache.
+;; Use both the seletor and the shortcut key to switch themes/font.
+;; Load previous theme/font/font-size after restarting the emacs.
+;; Each theme can be configured individually.
+;; Download unused themes automatically with package.el.
+;; Generate interactive function automatically.
+
+;;; Installation
 
 ;; put this file in your load-path.
 
-;;;;; MELPA
-
-;;;;; Manual
+;;; MELPA
 
 ;; Install these required packages:
 
 ;; + cl-lib
 ;; + ivy
 
-;; put this in your init.
-;; file:
-
-;; (require 'lacquer)
-;; (lacquer-mode)
-
-;;;; Usage
+;;; Usage
 
 ;; Run one of these commands:
 
 ;; `lacquer-mode': start up lacquer-mode.
 
-;;;; Tips
+;;; Tips
 
 ;; (use-package lacquer
 ;;     :ensure nil
@@ -129,7 +130,7 @@ Optional: config.Any function."
   :type 'integer)
 
 
-(defcustom lacquer/cache "~/.emacs.d/.lacquer"
+(defcustom lacquer/cache (concat user-emacs-directory ".lacquer")
   "Path of cache."
   :type 'string)
 
@@ -204,16 +205,15 @@ Optional: config.Any function."
 (defun lacquer-make-setting ()
   "Make setting instance."
   (setq lacquer/setting
-        (make-instance 'lacquer-setting-cls :cls-cache-path lacquer/cache
+        (make-instance 'lacquer-setting-cls
+                       :cls-cache-path lacquer/cache
                        :cls-theme-list lacquer/theme-list
                        :cls-font-list lacquer/font-list
                        :cls-cache-str (lacquer-read-path lacquer/cache)
                        :cls-setting (list (cons "theme" lacquer/default-theme)
                                           (cons "font" lacquer/default-font)
-                                          (cons "font-size" lacquer/default-font-size)))
-        )
-  (cls-init lacquer/setting)
-  )
+                                          (cons "font-size" lacquer/default-font-size))))
+  (cls-init lacquer/setting))
 
 ;; Theme
 
@@ -232,8 +232,7 @@ CONFIG: theme config."
 
        (cls-set lacquer/setting "theme" (quote ,load-name))
        (message (format "<%s> loaded successfully."
-                        (symbol-name (quote ,load-name)))))
-     ))
+                        (symbol-name (quote ,load-name)))))))
 
 
 (defun lacquer-theme-factory (theme)
@@ -246,8 +245,7 @@ CONFIG: theme config."
   "Font factory macro by FONT."
   `(progn
      (set-face-attribute 'default nil :font (symbol-name (quote ,font)))
-     (cls-set lacquer/setting "font" (quote ,font))
-     ))
+     (cls-set lacquer/setting "font" (quote ,font))))
 
 
 (defun lacquer-font-factory (font)
@@ -260,8 +258,7 @@ CONFIG: theme config."
   `(defun ,name ()
      "Lacquer interactive."
      (interactive)
-     ,body
-     ))
+     ,body))
 
 
 (defmacro lacquer-macro-factory (list func)
@@ -293,7 +290,7 @@ CONFIG: theme config."
 
 ;; Selector
 
-(defun make-selector (list current select-list prompt &optional which)
+(cl-defun lacquer-make-selector (&key list current select-list prompt which)
   "Make selector by LIST of theme or font, CURRENT, SELECT-LIST and PROMPT or WHICH function."
   (let* ((selected (cl-loop with i = 0
                             for v in list
@@ -306,14 +303,11 @@ CONFIG: theme config."
                              select-list
                              :sort nil
                              :require-match t
-                             :preselect selected
-                             ))
+                             :preselect selected))
          (func (intern func-str)))
     (if (fboundp func)
         (funcall func)
-      (message (format "<%s> is no existing." func-str)))
-    )
-  )
+      (message (format "<%s> is no existing." func-str)))))
 
 
 ;;;###autoload
@@ -321,13 +315,12 @@ CONFIG: theme config."
   "Open theme selector in the minibuffer."
   (interactive)
   (with-eval-after-load 'ivy
-    (make-selector
-     lacquer/theme-list
-     (cls-get lacquer/setting "theme")
-     lacquer/theme-name-list
-     (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "theme")))
-     (lambda (v) (nth 1 v)))
-    ))
+    (lacquer-make-selector
+     :list lacquer/theme-list
+     :current (cls-get lacquer/setting "theme")
+     :select-list lacquer/theme-name-list
+     :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "theme")))
+     :which (lambda (v) (nth 1 v)))))
 
 
 ;;;###autoload
@@ -335,12 +328,11 @@ CONFIG: theme config."
   "Open font selector in the minibuffer."
   (interactive)
   (with-eval-after-load 'ivy
-    (make-selector
-     lacquer/font-list
-     (cls-get lacquer/setting "font")
-     lacquer/font-list
-     (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "font")))
-     )))
+    (lacquer-make-selector
+     :list lacquer/font-list
+     :current (cls-get lacquer/setting "font")
+     :select-list lacquer/font-list
+     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "font"))))))
 
 
 ;;;###autoload
@@ -360,15 +352,14 @@ CONFIG: theme config."
 
 ;;;;; Keymaps
 
-(defun lacquer-generate-map (map list prefix-key &optional which)
+(cl-defun lacquer-generate-map (&key map list prefix-key which)
   "Generate key map by key MAP, LIST, PREFIX-KEY or WHICH func."
   (cl-loop with i = 0
            for v in list
            do (progn
                 (define-key map (kbd (concat prefix-key " " (nth i lacquer/keys-map-index))) (if (functionp which) (funcall which v) v))
                 (cl-incf i))
-           finally return map
-           ))
+           finally return map))
 
 
 (defvar lacquer-mode-map (make-sparse-keymap "lacquer map")
@@ -392,14 +383,14 @@ CONFIG: theme config."
   (lacquer-macro-factory lacquer/font-list lacquer-font-factory)
   
   (lacquer-generate-map
-   lacquer-mode-map
-   lacquer/theme-list
-   lacquer/theme-prefix-key
-   (lambda (v) (nth 1 v)))
+   :map lacquer-mode-map
+   :list lacquer/theme-list
+   :prefix-key lacquer/theme-prefix-key
+   :which (lambda (v) (nth 1 v)))
   (lacquer-generate-map
-   lacquer-mode-map
-   lacquer/font-list
-   lacquer/font-prefix-key)
+   :map lacquer-mode-map
+   :list lacquer/font-list
+   :prefix-key lacquer/font-prefix-key)
   
   (cls-call lacquer/setting)
   (setq lacquer/started t))
