@@ -17,7 +17,7 @@ ps: using it with `which-key' is recommended.
 
 [[./theme-keys.png]]
 
-[[./font-selector.png.png]]
+[[./font-selector.png]]
 
 [[./font-keys.png]]
  
