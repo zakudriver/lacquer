@@ -77,4 +77,8 @@ Download el file to your load-path.
 | lacquer-font-size-increase | Font size increase.                    |
 | lacquer-font-size-decrease | Font size decrease.                    |
 
+* TODO
+- Distinguish between light and dark theme.
+- Switch theme according to time.
+
 ** [[http://www.gnu.org/licenses/][License]]
