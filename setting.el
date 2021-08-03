@@ -7,6 +7,8 @@
 
 
 (require 'utils)
+(require 'eieio)
+(require 'cl-generic)
 
 
 (defclass lacquer-setting-cls ()
