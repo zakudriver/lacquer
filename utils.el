@@ -1,5 +1,8 @@
-;;; utils.el --- Package description (Extend for lacquer)  -*- lexical-binding: t; -*-
+;;; utils.el --- Extend for lacquer  -*- lexical-binding: t; -*-
 
+;;; Commentary:
+
+;; Some util function for lacquer.
 
 ;;; Code:
 

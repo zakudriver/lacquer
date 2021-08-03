@@ -1,3 +1,8 @@
+;;; setting.el --- Setting about lacquer  -*- lexical-binding: t; -*-
+
+;;; Commentary:
+;; Setting class of lacquer.
+
 ;;; Code:
 
 
