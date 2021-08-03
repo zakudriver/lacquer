@@ -51,9 +51,11 @@
 (cl-defmethod cls-parse-cache ((this lacquer-setting-cls) key)
   "Parse THIS's string of cache by KEY.
 Return string."
-  (string-replace (format "%s=" key) "" (progn
-                                          (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
-                                          (match-string 0 (oref this cls-cache-str)))))
+  (replace-regexp-in-string (regexp-quote (format "%s=" key))
+                            ""
+                            (progn
+                              (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
+                              (match-string 0 (oref this cls-cache-str)))))
 
 
 (cl-defmethod cls-check-setting ((this lacquer-setting-cls) key value)
