@@ -103,6 +103,18 @@ Optional: config.Any function."
   :type 'list)
 
 
+(defcustom lacquer/auto-switch-mode 'orderly
+  "Mode of switch theme automatically."
+  :type '(choice
+          (const :tag "Orderly" orderly)
+          (const :tag "Random" random)))
+
+
+(defcustom lacquer/auto-switch-time "12:00"
+  "Time to switch themes every day."
+  :type 'time)
+
+
 (defcustom lacquer/default-theme 'monokai
   "Default theme."
   :type 'symbol)
@@ -179,6 +191,11 @@ Optional: config.Any function."
   :type 'string)
 
 
+(defcustom lacquer/theme-carousel-key "C-c T C"
+  "Theme carousel bind key."
+  :type 'string)
+
+
 (defcustom lacquer/font-size-step 5
   "Change font size of step."
   :type 'integer)
@@ -193,14 +210,14 @@ Optional: config.Any function."
   "Theme name list.")
 
 
-(defvar lacquer/setting nil
+(defvar lacquer/setting-instance nil
   "Setting instance.")
 
 ;;;;; Private
 
 (defun lacquer-make-setting ()
   "Make setting instance."
-  (setq lacquer/setting
+  (setq lacquer/setting-instance
         (make-instance 'lacquer-setting-cls
                        :cls-cache-path lacquer/cache
                        :cls-theme-list lacquer/theme-list
@@ -209,12 +226,13 @@ Optional: config.Any function."
                        :cls-setting (list (cons "theme" lacquer/default-theme)
                                           (cons "font" lacquer/default-font)
                                           (cons "font-size" lacquer/default-font-size))))
-  (cls-init lacquer/setting))
+  (cls-init lacquer/setting-instance))
 
 ;; Theme
 
-(defmacro lacquer-theme-factory-macro (name load-name &rest config)
+(defmacro lacquer-theme-factory-macro (index name load-name &rest config)
   "Theme factory macro.
+INDEX: index in lacquer/theme-list
 NAME: theme package name.
 LOAD-NAME: theme name.
 CONFIG: theme config."
@@ -222,31 +240,33 @@ CONFIG: theme config."
      (unless (package-installed-p (quote ,name))
        (package-install (quote ,name)))
      (when (symbolp (quote ,load-name))
-       (disable-theme (cls-get lacquer/setting "theme"))
+       (disable-theme (cls-get lacquer/setting-instance "theme"))
        (load-theme (quote ,load-name) t)
        ,@config
 
-       (cls-set lacquer/setting "theme" (quote ,load-name))
+       (cls-set lacquer/setting-instance "theme" (quote ,load-name))
+       (cls-set-index lacquer/setting-instance "theme" ,index)
        (message (format "<%s> loaded successfully."
                         (symbol-name (quote ,load-name)))))))
 
 
-(defun lacquer-theme-factory (theme)
-  "Make params of theme factory function by THEME."
-  (lacquer-interactive-factory (nth 1 theme) `(lacquer-theme-factory-macro ,@theme)))
+(defun lacquer-theme-factory (theme index)
+  "Make params of theme factory function by THEME and INDEX."
+  (lacquer-interactive-factory (nth 1 theme) `(lacquer-theme-factory-macro ,index ,@theme)))
 
 ;; Font
 
-(defmacro lacquer-font-factory-macro (font)
-  "Font factory macro by FONT."
+(defmacro lacquer-font-factory-macro (index font)
+  "Font factory macro by FONT and INDEX."
   `(progn
      (set-face-attribute 'default nil :font (symbol-name (quote ,font)))
-     (cls-set lacquer/setting "font" (quote ,font))))
+     (cls-set-index lacquer/setting-instance "font" ,index)
+     (cls-set lacquer/setting-instance "font" (quote ,font))))
 
 
-(defun lacquer-font-factory (font)
-  "Make params of theme factory function by FONT."
-  (lacquer-interactive-factory font `(lacquer-font-factory-macro ,font)))
+(defun lacquer-font-factory (font index)
+  "Make params of theme factory function by FONT and INDEX."
+  (lacquer-interactive-factory font `(lacquer-font-factory-macro ,index ,font)))
 
 
 (defun lacquer-interactive-factory (name body)
@@ -259,15 +279,26 @@ CONFIG: theme config."
 
 (defmacro lacquer-macro-factory (list func)
   "Theme function macro factory by LIST and callback FUNC."
-  `(progn ,@(mapcar func (eval list))))
+  (let ((i -1))
+    `(progn ,@(mapcar #'(lambda (v)
+                          (cl-incf i)
+                          (funcall func v i)) (eval list)))))
 
 ;; Font-size
 
 (defun lacquer-font-size-operate (size)
   "Change font SIZE."
   (set-face-attribute 'default nil :height size)
-  (cls-set lacquer/setting "font-size" size)
+  (cls-set lacquer/setting-instance "font-size" size)
   (message "Current font size: <%s>." size))
+
+;; Automatically
+
+(defun lacquer-auto-switch ()
+  "Swtich theme automatically."
+  
+  )
+
 
 ;;;;; Public
 
@@ -275,14 +306,14 @@ CONFIG: theme config."
 (defun lacquer-current-theme ()
   "Current theme."
   (interactive)
-  (message "Current theme: <%s>." (symbol-name (cls-get lacquer/setting "theme"))))
+  (message "Current theme: <%s>." (symbol-name (cls-get lacquer/setting-instance "theme"))))
 
 
 ;;;###autoload
 (defun lacquer-current-font ()
   "Current font."
   (interactive)
-  (message "Current font: <%s>." (symbol-name (cls-get lacquer/setting "font"))))
+  (message "Current font: <%s>." (symbol-name (cls-get lacquer/setting-instance "font"))))
 
 ;; Selector
 
@@ -313,10 +344,17 @@ CONFIG: theme config."
   (with-eval-after-load 'ivy
     (lacquer-make-selector
      :list lacquer/theme-list
-     :current (cls-get lacquer/setting "theme")
+     :current (cls-get lacquer/setting-instance "theme")
      :select-list lacquer/theme-name-list
-     :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "theme")))
+     :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "theme")))
      :which (lambda (v) (nth 1 v)))))
+
+
+;;;###autoload
+(defun lacquer-theme-carousel ()
+  "Next theme from theme list."
+  (interactive)
+  (funcall (cls-get-next lacquer/setting-instance "theme" lacquer/auto-switch-mode)))
 
 
 ;;;###autoload
@@ -326,16 +364,16 @@ CONFIG: theme config."
   (with-eval-after-load 'ivy
     (lacquer-make-selector
      :list lacquer/font-list
-     :current (cls-get lacquer/setting "font")
+     :current (cls-get lacquer/setting-instance "font")
      :select-list lacquer/font-list
-     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting "font"))))))
+     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font"))))))
 
 
 ;;;###autoload
 (defun lacquer-font-size-increase ()
   "Font size increase."
   (interactive)
-  (let ((size (+ (cls-get lacquer/setting "font-size") lacquer/font-size-step)))
+  (let ((size (+ (cls-get lacquer/setting-instance "font-size") lacquer/font-size-step)))
     (lacquer-font-size-operate size)))
 
 
@@ -343,7 +381,7 @@ CONFIG: theme config."
 (defun lacquer-font-size-decrease ()
   "Font size decrease."
   (interactive)
-  (let ((size (- (cls-get lacquer/setting "font-size") lacquer/font-size-step)))
+  (let ((size (- (cls-get lacquer/setting-instance "font-size") lacquer/font-size-step)))
     (lacquer-font-size-operate size)))
 
 ;;;;; Keymaps
@@ -368,11 +406,13 @@ CONFIG: theme config."
 (define-key lacquer-mode-map (kbd lacquer/font-selector-key) 'lacquer-font-selector)
 (define-key lacquer-mode-map (kbd lacquer/font-increase-key) 'lacquer-font-size-increase)
 (define-key lacquer-mode-map (kbd lacquer/font-decrease-key) 'lacquer-font-size-decrease)
+(define-key lacquer-mode-map (kbd lacquer/theme-carousel-key) 'lacquer-lacquer-theme-carousel)
 
 ;; Minor-mode
 
-(defun lacquer-start-up ()
-  "Start up."
+(defun lacquer-start-up (&optional auto)
+  "Start up.
+When AUTO is `no-nil' execute switch theme automatically."
   (lacquer-make-setting)
   
   (lacquer-macro-factory lacquer/theme-list lacquer-theme-factory)
@@ -388,7 +428,7 @@ CONFIG: theme config."
    :list lacquer/font-list
    :prefix-key lacquer/font-prefix-key)
   
-  (cls-call lacquer/setting)
+  (cls-call lacquer/setting-instance)
   (setq lacquer/started t))
 
 
@@ -402,6 +442,17 @@ CONFIG: theme config."
   :lighter nil
   (unless lacquer/started
     (lacquer-start-up)))
+
+
+(define-minor-mode lacquer-auto-mode
+  "Minor mode to enable lacquer-auto."
+  :init-value nil
+  :group 'lacquer
+  :keymap lacquer-mode-map
+  :global t
+  :lighter nil
+  (unless lacquer/started
+    (lacquer-start-up t)))
 
 
 (provide 'lacquer)

@@ -32,14 +32,17 @@ PREFIX is optional string."
     ""))
 
 
-(defun lacquer-is-existing (list target &optional which)
-  "Check TARGET is exists in LIST.
+(defun lacquer-list-include (list target &optional which)
+  "Whether TARGET is included in LIST, and return index or nil.
 WHICH is a `nth' function to LIST."
-  (cl-loop for i in list
-           when (eq
-                 (if (functionp which) (funcall which i) i)
-                 target)
-           return t))
+  (cl-loop with i = 0
+           for v in list
+           if (eq (if (functionp which) (funcall which v) v)
+                  target)
+           return i
+           else
+           do (cl-incf i)
+           finally return nil))
 
 
 (defun lacquer-font-installed-p (name)

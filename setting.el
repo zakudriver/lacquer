@@ -41,10 +41,18 @@
    (cls-setting :initarg :cls-setting
                 :initform '(("theme" . nil)
                             ("font" . nil)
-                            ("font-size" . 0))
+                            ("font-size" . 0)
+                            ("mode" . nil)
+                            ("time" . ""))
                 :type cons
                 :custom cons
-                :documentation "Currnet setting.(theme,font and font-size)."))
+                :documentation "Currnet setting.(theme,font and font-size).")
+   (cls-index :initarg :cls-theme-index
+              :initform '(("theme" . 0)
+                          ("font" . 0))
+              :type list
+              :custom list
+              :documentation "Current theme/font index."))
   "Lacquer setting self.")
 
 
@@ -62,14 +70,21 @@ Return string."
   "Check THIS's setting value by KEY and VALUE, and return right value."
   (cond ((string= key "theme")
          (let ((theme (intern value)))
-           (if (lacquer-is-existing (oref this cls-theme-list) theme (lambda (v) (nth 1 v)))
-               theme (cls-get this key))))
+           (let ((index (lacquer-list-include
+                         (oref this cls-theme-list) theme (lambda (v) (nth 1 v)))))
+             (if index
+                 theme (cls-get this key)))))
         ((string= key "font")
          (let ((font (intern value)))
-           (if (and (lacquer-is-existing (oref this cls-font-list) font) (lacquer-font-installed-p value))
+           (if (and (lacquer-list-include (oref this cls-font-list) font) (lacquer-font-installed-p value))
                font (cls-get this key))))
-        (t
-         (if value (string-to-number value) (cls-get this key)))))
+        ((string= key "font-size")
+         (if value (string-to-number value) (cls-get this key)))
+        ((string= key "mode")
+         (intern value))
+        ((string= key "time")
+         value)
+        (t nil)))
 
 
 (cl-defmethod cls-init ((this lacquer-setting-cls))
@@ -100,6 +115,7 @@ Return symbol of theme or font, int of font-size."
                      (assoc key (oref this cls-setting))))
     (setf (cdr
            (assoc key (oref this cls-setting))) value)
+    
     (cls-write-cache this)))
 
 
@@ -111,6 +127,50 @@ Return symbol of theme or font, int of font-size."
             do (setq str (concat str (format "%s=" k) (format "%s" v) "\n"))
             finally return str)
    nil (oref this cls-cache-path)))
+
+
+(cl-defmethod cls-get-index ((this lacquer-setting-cls) key)
+  "Get THIS's index from KEY."
+  (cdr (assoc key (oref this cls-index))))
+
+
+(cl-defmethod cls-get-list ((this lacquer-setting-cls) key)
+  "Get THIS's theme or font list from KEY."
+  (cond ((string= key "theme")
+         (oref this cls-theme-list))
+        ((string= key "font")
+         (oref this cls-font-list))
+        (t
+         nil)))
+
+
+
+(cl-defmethod cls-next-index ((this lacquer-setting-cls) key)
+  "Get THIS's next index from KEY."
+  (let ((next (+ (cls-get-index this key) 1)))
+    (if (= next (length (cls-get-list this key)))
+        0
+      next)))
+
+
+(cl-defmethod cls-set-index ((this lacquer-setting-cls) key value)
+  "Set THIS's index by KEY and VALUE."
+  (setf (cdr
+         (assoc key (oref this cls-index))) value))
+
+
+(cl-defmethod cls-get-next ((this lacquer-setting-cls) key mode)
+  "Get THIS's next KEY of theme or font.
+MODE is lacquer/auto-switch-mode."
+  (let ((i 0)
+        (list (cls-get-list this key)))
+    (cond ((eq mode 'orderly)
+           (setq i (cls-next-index this key)))
+          ((eq mode 'random)
+           (setq i (random (length list))))
+          (t
+           (setq i 0)))
+    (nth 1 (nth i list))))
 
 
 (provide 'setting)
