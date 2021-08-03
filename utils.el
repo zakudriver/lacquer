@@ -4,7 +4,14 @@
 
 ;; Some util function for lacquer.
 
+;;; Install these required packages:
+
+;; + cl-lib
+
 ;;; Code:
+
+
+(require 'cl-lib)
 
 
 (defun lacquer-generate-keys-index-list (&optional prefix)
@@ -22,8 +29,7 @@ PREFIX is optional string."
   "Read PATH return string or nil."
   (if (file-exists-p path)
       (with-temp-buffer (insert-file-contents path) (buffer-string))
-    ""
-    ))
+    ""))
 
 
 (defun lacquer-is-existing (list target &optional which)

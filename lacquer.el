@@ -29,7 +29,7 @@
 
 ;;; MELPA
 
-;; Install these required packages:
+;;; Install these required packages:
 
 ;; + cl-lib
 ;; + ivy

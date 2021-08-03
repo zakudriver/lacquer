@@ -1,19 +1,25 @@
 ;;; setting.el --- Setting about lacquer  -*- lexical-binding: t; -*-
 
 ;;; Commentary:
+
 ;; Setting class of lacquer.
+
+;;; Install these required packages:
+
+;; + cl-lib
+;; + eieio
 
 ;;; Code:
 
 
-(require 'utils)
+(require 'cl-lib)
 (require 'eieio)
-(require 'cl-generic)
+(require 'utils)
 
 
 (defclass lacquer-setting-cls ()
   ((cls-cache-path :initarg :cls-cache-path
-                   :initform "~/.emacs.d/.lacquer"
+                   :initform (concat user-emacs-directory ".lacquer")
                    :type string
                    :custom string
                    :documentation "String of cache content.")
@@ -38,8 +44,7 @@
                             ("font-size" . 0))
                 :type cons
                 :custom cons
-                :documentation "Currnet setting.(theme,font and font-size).")
-   )
+                :documentation "Currnet setting.(theme,font and font-size)."))
   "Lacquer setting self.")
 
 
@@ -48,8 +53,7 @@
 Return string."
   (string-replace (format "%s=" key) "" (progn
                                           (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
-                                          (match-string 0 (oref this cls-cache-str))
-                                          )))
+                                          (match-string 0 (oref this cls-cache-str)))))
 
 
 (cl-defmethod cls-check-setting ((this lacquer-setting-cls) key value)
@@ -71,8 +75,7 @@ Return string."
   (cl-loop for (k . v) in (oref this cls-setting)
            do (setf (cdr
                      (assoc k (oref this cls-setting)))
-                    (cls-check-setting this k (cls-parse-cache this k)))
-           ))
+                    (cls-check-setting this k (cls-parse-cache this k)))))
 
 
 (cl-defmethod cls-call ((this lacquer-setting-cls))
@@ -80,8 +83,7 @@ Return string."
   (cl-loop for (k . v) in (oref this cls-setting)
            do (if (string= k "font-size")
                   (set-face-attribute 'default nil :height v)
-                (funcall v)
-                )))
+                (funcall v))))
 
 
 (cl-defmethod cls-get ((this lacquer-setting-cls) key)
@@ -96,8 +98,7 @@ Return symbol of theme or font, int of font-size."
                      (assoc key (oref this cls-setting))))
     (setf (cdr
            (assoc key (oref this cls-setting))) value)
-    (cls-write-cache this)
-    ))
+    (cls-write-cache this)))
 
 
 (cl-defmethod cls-write-cache ((this lacquer-setting-cls))
