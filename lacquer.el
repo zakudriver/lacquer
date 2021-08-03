@@ -5,7 +5,7 @@
 ;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
 ;; URL: https://example.com/package-name.el
 ;; Version: 1.0
-;; Package-Requires: ((emacs "25.2"))
+;; Package-Requires: ((emacs "25.2") (ivy "0.13.4"))
 ;; Keywords: tools
 
 ;; This file is not part of GNU Emacs.
