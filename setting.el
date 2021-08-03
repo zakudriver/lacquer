@@ -42,11 +42,10 @@
                 :initform '(("theme" . nil)
                             ("font" . nil)
                             ("font-size" . 0)
-                            ("mode" . nil)
-                            ("time" . ""))
-                :type cons
-                :custom cons
-                :documentation "Currnet setting.(theme,font and font-size).")
+                            ("mode" . nil))
+                :type list
+                :custom list
+                :documentation "Currnet setting.(theme, font, font-size and mode).")
    (cls-index :initarg :cls-theme-index
               :initform '(("theme" . 0)
                           ("font" . 0))
@@ -61,30 +60,30 @@
 Return string."
   (replace-regexp-in-string (regexp-quote (format "%s=" key))
                             ""
-                            (progn
-                              (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
-                              (match-string 0 (oref this cls-cache-str)))))
+                            (if (string-match (format "^%s=.+$" key) (oref this cls-cache-str))
+                                (match-string 0 (oref this cls-cache-str))
+                              "")))
 
 
 (cl-defmethod cls-check-setting ((this lacquer-setting-cls) key value)
   "Check THIS's setting value by KEY and VALUE, and return right value."
-  (cond ((string= key "theme")
-         (let ((theme (intern value)))
-           (let ((index (lacquer-list-include
-                         (oref this cls-theme-list) theme (lambda (v) (nth 1 v)))))
-             (if index
-                 theme (cls-get this key)))))
-        ((string= key "font")
-         (let ((font (intern value)))
-           (if (and (lacquer-list-include (oref this cls-font-list) font) (lacquer-font-installed-p value))
-               font (cls-get this key))))
-        ((string= key "font-size")
-         (if value (string-to-number value) (cls-get this key)))
-        ((string= key "mode")
-         (intern value))
-        ((string= key "time")
-         value)
-        (t nil)))
+  (if (string= value "")
+      (cls-get this key)
+    (cond ((string= key "theme")
+           (let ((theme (intern value)))
+             (let ((index (lacquer-list-include
+                           (oref this cls-theme-list) theme (lambda (v) (nth 1 v)))))
+               (if index
+                   theme (cls-get this key)))))
+          ((string= key "font")
+           (let ((font (intern value)))
+             (if (and (lacquer-list-include (oref this cls-font-list) font) (lacquer-font-installed-p value))
+                 font (cls-get this key))))
+          ((string= key "font-size")
+           (if value (string-to-number value) (cls-get this key)))
+          ((string= key "mode")
+           (if value (intern value) (cls-get this key)))
+          (t nil))))
 
 
 (cl-defmethod cls-init ((this lacquer-setting-cls))
@@ -98,9 +97,12 @@ Return string."
 (cl-defmethod cls-call ((this lacquer-setting-cls))
   "Initialization call THIS's theme, font and font-sie."
   (cl-loop for (k . v) in (oref this cls-setting)
-           do (if (string= k "font-size")
-                  (set-face-attribute 'default nil :height v)
-                (funcall v))))
+           do (cond ((string= k "font-size")
+                     (set-face-attribute 'default nil :height v))
+                    ((string= k "mode")
+                     nil)
+                    (t
+                     (funcall v)))))
 
 
 (cl-defmethod cls-get ((this lacquer-setting-cls) key)
@@ -115,7 +117,6 @@ Return symbol of theme or font, int of font-size."
                      (assoc key (oref this cls-setting))))
     (setf (cdr
            (assoc key (oref this cls-setting))) value)
-    
     (cls-write-cache this)))
 
 
@@ -142,7 +143,6 @@ Return symbol of theme or font, int of font-size."
          (oref this cls-font-list))
         (t
          nil)))
-
 
 
 (cl-defmethod cls-next-index ((this lacquer-setting-cls) key)
@@ -176,3 +176,11 @@ MODE is lacquer/auto-switch-mode."
 (provide 'setting)
 
 ;;; setting.el ends here
+(setq a "theme=doom-tomorrow-night
+font=Iosevka
+font-size=135")
+
+(replace-regexp-in-string (regexp-quote (format "%s=" "mode"))
+                          ""
+                          (if (string-match (format "^%s=.+$" "mode") a)
+                              (match-string 0 a) ""))
