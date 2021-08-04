@@ -7,11 +7,13 @@
 ;;; Install these required packages:
 
 ;; + cl-lib
+;; + cl-seq
 
 ;;; Code:
 
 
 (require 'cl-lib)
+(require 'cl-seq)
 
 
 (defun lacquer-generate-keys-index-list (&optional prefix)
@@ -50,9 +52,22 @@ WHICH is a `nth' function to LIST."
   (find-font (font-spec :name name)))
 
 
-(defun lacquer-temporal-seconds (num temporal)
-  "Mapping TEMPORAL of NUM to durations in seconds."
-  (* num (cdr (assoc temporal timer-duration-words))))
+(defun lacquer-temporal-seconds (num word)
+  "Mapping WORD of NUM to durations in seconds."
+  (* num (cdr (assoc word timer-duration-words))))
+
+
+(defun lacquer-time-number (str)
+  "STR of '12:00' to integer of 1200."
+  (string-to-number (replace-regexp-in-string (regexp-quote ":") "" str)))
+
+
+(defun lacquer-decoded-time (time word)
+  "Like decoded-time-xxx(Emacs '27.1').
+Get TIME object item by WORD."
+  (let* ((words '("seconds" "minutes" "hour" "day" "month" "year" "dow" "dst" "zone"))
+         (index (cl-position word words :test 'equal)))
+    (nth index time)))
 
 
 (provide 'utils)

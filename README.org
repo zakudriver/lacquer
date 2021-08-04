@@ -30,9 +30,11 @@ Download el file to your load-path.
       :ensure nil
       :load-path "~/.emacs.d/site-lisp/lacquer"
       :hook
-      (after-init . lacquer-mode)
+      (after-init . lacquer-auto-mode)
       :custom
-      (lacquer/cache "~/.emacs.d/lacquer")
+      (lacquer/cache "~/.emacs.d/.lacquer")
+      (lacquer/auto-switch-time '("10:00" "12:00" "15:00" "17:00")) ;; (lacquer/auto-switch-time 3600) ;; switch every hour.
+      (lacquer/auto-switch-mode 'random)
       (lacquer/theme-list '((monokai-theme monokai)
                             (monokai-pro-theme monokai-pro)
                             (dracula-theme dracula)
@@ -54,18 +56,20 @@ Download el file to your load-path.
 #+END_SRC
 
 * Customization
-| Variable                  | Default                                        | type    | Description                                                 |
-|---------------------------+------------------------------------------------+---------+-------------------------------------------------------------|
-| lacquer/theme-list        | '((monokai-theme monokai))                     | list    | Theme list. E.g: '((theme-package-name theme-name config)). |
-| lacquer/default-theme     | 'monokai                                       | list    | Default theme.                                              |
-| lacquer/cache             | "~/.emacs.d/.lacquer"                          | string  | Path of lacquer cache.                                      |
-| lacquer/keys-map-index    | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list    | Keys map.                                                   |
-| lacquer/font-list         | '(Menlo Fira\ Code)                            | list    | Font list. E.g: '(font-name).                               |
-| lacquer/default-font      | 'Menlo                                         | symbol  | Default font.                                               |
-| lacquer/default-font-size | 135                                            | integer | Default font size.                                          |
-| lacquer/theme-prefix-key  | "C-c T"                                        | string  | Trigger theme of prefix key.                                |
-| lacquer/font-prefix-key   | "C-c F"                                        | string  | Trigger font of prefix key.                                 |
-| lacquer/font-size-step    | 5                                              | integer | Change font size of step.                                   |
+| Variable                  | Default                                        | type         | Description                                                                                                                 |
+|---------------------------+------------------------------------------------+--------------+-----------------------------------------------------------------------------------------------------------------------------|
+| lacquer/theme-list        | '((monokai-theme monokai))                     | list         | Theme list. E.g: '((theme-package-name theme-name config)).                                                                 |
+| lacquer/default-theme     | 'monokai                                       | list         | Default theme.                                                                                                              |
+| lacquer/cache             | "~/.emacs.d/.lacquer"                          | string       | Path of lacquer cache.                                                                                                      |
+| lacquer/keys-map-index    | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list         | Keys map.                                                                                                                   |
+| lacquer/font-list         | '(Menlo Fira\ Code)                            | list         | Font list. E.g: '(font-name).                                                                                               |
+| lacquer/default-font      | 'Menlo                                         | symbol       | Default font.                                                                                                               |
+| lacquer/default-font-size | 135                                            | integer      | Default font size.                                                                                                          |
+| lacquer/theme-prefix-key  | "C-c T"                                        | string       | Trigger theme of prefix key.                                                                                                |
+| lacquer/font-prefix-key   | "C-c F"                                        | string       | Trigger font of prefix key.                                                                                                 |
+| lacquer/font-size-step    | 5                                              | integer      | Change font size of step.                                                                                                   |
+| lacquer/auto-switch-mode  | 'orderly                                       | symbol       | Mode of switch theme automatically. Currently supports 'orderly and 'random.                                                |
+| lacquer/auto-switch-time  | 3600(seconds)                                  | integer/list | When it's list,  switch themes at time of list item every day. And when it's integer, switch themes for every THIS seconds. |
 
 * Command
 | Command                    | Description                            |
@@ -76,9 +80,11 @@ Download el file to your load-path.
 | lacquer-font-selector      | Open font selector in the minibuffer.  |
 | lacquer-font-size-increase | Font size increase.                    |
 | lacquer-font-size-decrease | Font size decrease.                    |
+| lacquer-start-auto-switch  | Start swtich theme automatically.      |
+| lacquer-stop-auto-switch   | Stop switch theme automatically.       |
+| lacquer-mode-selector      | Open mode selector in the minibuffer.  |
 
 * TODOList
 - Distinguish between light and dark theme.
-- Switch theme according to time.
 
 ** [[http://www.gnu.org/licenses/][License]]

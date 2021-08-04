@@ -20,8 +20,6 @@
 (defclass lacquer-automation-cls ()
   ((cls-time :initarg :cls-time
              :initform 0
-             :type integer
-             :custom integer
              :documentation "Time.")
    (cls-timer-list :initarg :cls-timer-list
                    :initform '()
@@ -41,7 +39,7 @@
         (push list timer)))
     (when (listp time)
       (dolist (i time)
-        (let ((timer (run-at-time i (lacquer-temporal-seconds 1 "day") func)))
+        (let ((timer (run-at-time (cls-resolve-time this i) (lacquer-temporal-seconds 1 "day") func)))
           (push list timer))))))
 
 
@@ -50,8 +48,25 @@
   (let ((list (oref this cls-timer-list)))
     (when (listp list)
       (dolist (i list)
-        (cancel-timer i)))
+        (when (timerp i)
+          (cancel-timer i))))
     (oset this cls-timer-list '())))
+
+
+(cl-defmethod cls-resolve-time ((this lacquer-automation-cls) time-str)
+  "Resolve THIS's time.
+If TIME-STR is past time in the tody, set to tomorrow."
+  (let* ((hhmm (lacquer-time-number time-str))
+         (now-code (decode-time))
+         (now (current-time))
+         (time (encode-time 0 (% hhmm 100) (/ hhmm 100)
+                            (lacquer-decoded-time now-code "day")
+				                    (lacquer-decoded-time now-code "month")
+                            (lacquer-decoded-time now-code "year")
+                            (lacquer-decoded-time now-code "zone"))))
+    (if (time-less-p now time)
+        time
+      (time-add time (lacquer-temporal-seconds 1 "day")))))
 
 
 (provide 'automation)

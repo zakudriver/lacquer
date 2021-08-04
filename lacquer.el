@@ -88,6 +88,12 @@
 (require 'setting)
 (require 'automation)
 
+
+;;;; Constants
+
+(defconst lacquer/mode-list '(orderly random)
+  "Mode list.")
+
 ;;;; Customization
 
 (defgroup lacquer nil
@@ -105,7 +111,7 @@ Optional: config.Any function."
   :type 'list)
 
 
-(defcustom lacquer/auto-switch-mode 'orderly
+(defcustom lacquer/auto-switch-mode (car lacquer/mode-list)
   "Mode of switch theme automatically."
   :group 'lacquer
   :type '(choice
@@ -114,10 +120,11 @@ Optional: config.Any function."
 
 
 (defcustom lacquer/auto-switch-time (lacquer-temporal-seconds 1 "hour")
-  "Time to switch themes every day."
+  "When it's list,  switch themes at time of list item every day.
+When it's integer, switch themes for every THIS seconds"
   :group 'lacquer
   :type '(choice (integer :tag "Relativetime" :value 0)
-                 (list :tag "Timelist" :value '())))
+                 (list :tag "Timelist" :value '("10:00" "15:00" "18:00"))))
 
 
 (defcustom lacquer/default-theme 'monokai
@@ -327,13 +334,7 @@ CONFIG: theme config."
 
 (defun lacquer-switch-next-theme ()
   "Switch next theme from lacquer/auto-switch-mode."
-  (funcall (cls-get-next lacquer/setting-instance "theme" lacquer/auto-switch-mode)))
-
-
-(defun lacquer-auto-switch ()
-  "Swtich theme automatically."
-  (lacquer-new-automation)
-  (cls-run lacquer/automation-instance #'lacquer-switch-next-theme))
+  (funcall (cls-get-next lacquer/setting-instance "theme")))
 
 ;;;;; Public
 
@@ -352,8 +353,8 @@ CONFIG: theme config."
 
 ;; Selector
 
-(cl-defun lacquer-make-selector (&key list current select-list prompt which)
-  "Make selector by LIST of theme or font, CURRENT, SELECT-LIST and PROMPT or WHICH function."
+(cl-defun lacquer-make-selector (&key list current select-list prompt which func)
+  "Make selector by LIST of theme or font, CURRENT, SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
   (let* ((selected (cl-loop with i = 0
                             for v in list
                             if (eq (if (functionp which) (funcall which v) v) current)
@@ -361,15 +362,16 @@ CONFIG: theme config."
                             else
                             do (cl-incf i)
                             finally return i))
-         (func-str (ivy-read prompt
-                             select-list
-                             :sort nil
-                             :require-match t
-                             :preselect selected))
-         (func (intern func-str)))
-    (if (fboundp func)
-        (funcall func)
-      (message (format "<%s> is no existing." func-str)))))
+         (str (ivy-read prompt
+                        select-list
+                        :sort nil
+                        :require-match t
+                        :preselect selected)))
+    (when (functionp func)
+      (funcall func str)
+      
+      )
+    ))
 
 
 ;;;###autoload
@@ -382,7 +384,11 @@ CONFIG: theme config."
      :current (cls-get lacquer/setting-instance "theme")
      :select-list lacquer/theme-name-list
      :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "theme")))
-     :which (lambda (v) (nth 1 v)))))
+     :which (lambda (v) (nth 1 v))
+     :func (lambda (value)
+             (if (fboundp value)
+                 (funcall value)
+               (message (format "<%s> is no existing." value)))))))
 
 
 ;;;###autoload
@@ -394,7 +400,25 @@ CONFIG: theme config."
      :list lacquer/font-list
      :current (cls-get lacquer/setting-instance "font")
      :select-list lacquer/font-list
-     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font"))))))
+     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font")))
+     :func (lambda (value)
+             (if (fboundp value)
+                 (funcall value)
+               (message (format "<%s> is no existing." value)))))))
+
+
+;;;###autoload
+(defun lacquer-mode-selector ()
+  "Open mode selector in the minibuffer."
+  (interactive)
+  (with-eval-after-load 'ivy
+    (lacquer-make-selector
+     :list lacquer/mode-list
+     :current (cls-get lacquer/setting-instance "mode")
+     :select-list lacquer/mode-list
+     :prompt (format "Current mode is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "mode")))
+     :func (lambda (value)
+             (cls-set lacquer/setting-instance "mode" (intern value))))))
 
 ;; Carousel
 
@@ -421,6 +445,23 @@ CONFIG: theme config."
   (let ((size (- (cls-get lacquer/setting-instance "font-size") lacquer/font-size-step)))
     (lacquer-font-size-operate size)))
 
+
+;;;###autoload
+(defun lacquer-start-auto-switch ()
+  "Start swtich theme automatically."
+  (interactive)
+  (unless lacquer/automation-instance
+    (lacquer-new-automation))
+  (cls-run lacquer/automation-instance #'lacquer-switch-next-theme))
+
+
+;;;###autoload
+(defun lacquer-stop-auto-switch ()
+  "Stop switch theme automatically."
+  (interactive)
+  (cls-stop lacquer/automation-instance))
+
+
 ;;;;; Keymaps
 
 (cl-defun lacquer-generate-map (&key map list prefix-key which)
@@ -443,7 +484,10 @@ CONFIG: theme config."
 (define-key lacquer-mode-map (kbd lacquer/font-selector-key) 'lacquer-font-selector)
 (define-key lacquer-mode-map (kbd lacquer/font-increase-key) 'lacquer-font-size-increase)
 (define-key lacquer-mode-map (kbd lacquer/font-decrease-key) 'lacquer-font-size-decrease)
-(define-key lacquer-mode-map (kbd lacquer/theme-carousel-key) 'lacquer-lacquer-theme-carousel)
+(define-key lacquer-mode-map (kbd lacquer/theme-carousel-key) 'lacquer-theme-carousel)
+(define-key lacquer-mode-map (kbd "C-c T M") 'lacquer-mode-selector)
+(define-key lacquer-mode-map (kbd "C-c T A") 'lacquer-start-auto-switch)
+(define-key lacquer-mode-map (kbd "C-c T P") 'lacquer-stop-auto-switch)
 
 ;; Minor-mode
 
@@ -467,7 +511,7 @@ When AUTO is `no-nil' execute switch theme automatically."
   
   (cls-call lacquer/setting-instance)
   (when auto
-    (lacquer-auto-switch))
+    (lacquer-start-auto-switch))
   (setq lacquer/started t))
 
 

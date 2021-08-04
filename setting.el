@@ -159,10 +159,11 @@ Return symbol of theme or font, int of font-size."
          (assoc key (oref this cls-index))) value))
 
 
-(cl-defmethod cls-get-next ((this lacquer-setting-cls) key mode)
+(cl-defmethod cls-get-next ((this lacquer-setting-cls) key)
   "Get THIS's next KEY of theme or font.
 MODE is lacquer/auto-switch-mode."
   (let ((i 0)
+        (mode (cls-get this "mode"))
         (list (cls-get-list this key)))
     (cond ((eq mode 'orderly)
            (setq i (cls-next-index this key)))
@@ -176,11 +177,3 @@ MODE is lacquer/auto-switch-mode."
 (provide 'setting)
 
 ;;; setting.el ends here
-(setq a "theme=doom-tomorrow-night
-font=Iosevka
-font-size=135")
-
-(replace-regexp-in-string (regexp-quote (format "%s=" "mode"))
-                          ""
-                          (if (string-match (format "^%s=.+$" "mode") a)
-                              (match-string 0 a) ""))
