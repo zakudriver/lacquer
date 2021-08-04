@@ -8,17 +8,13 @@
 
 ;; + cl-lib
 ;; + eieio
-;; + timer
 
 ;;; Code:
 
 
 (require 'cl-lib)
 (require 'eieio)
-
-
-(defconst lacquer-day-seconds (cdr (assoc "day" timer-duration-words))
-  "Mapping day to durations in seconds.")
+(require 'utils)
 
 
 (defclass lacquer-automation-cls ()
@@ -41,10 +37,12 @@
   (let ((time (oref this cls-time))
         (list (oref this cls-timer-list)))
     (when (integerp time)
-      (oset this cls-timer-list (append (list (run-at-time time time func)) list)))
+      (let ((timer (run-at-time time time func)))
+        (push list timer)))
     (when (listp time)
       (dolist (i time)
-        (oset this cls-timer-list (append (list (run-at-time time lacquer-day-seconds func)) list))))))
+        (let ((timer (run-at-time i (lacquer-temporal-seconds 1 "day") func)))
+          (push list timer))))))
 
 
 (cl-defmethod cls-stop ((this lacquer-automation-cls))

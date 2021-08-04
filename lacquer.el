@@ -113,7 +113,7 @@ Optional: config.Any function."
           (const :tag "Random" :value random)))
 
 
-(defcustom lacquer/auto-switch-time 3600
+(defcustom lacquer/auto-switch-time (lacquer-temporal-seconds 1 "hour")
   "Time to switch themes every day."
   :group 'lacquer
   :type '(choice (integer :tag "Relativetime" :value 0)
@@ -257,8 +257,7 @@ Optional: config.Any function."
   "New automation instance."
   (setq lacquer/automation-instance
         (make-instance 'lacquer-automation-cls
-                       :cls-time lacquer/auto-switch-time
-                       :cls-timer-list '())))
+                       :cls-time lacquer/auto-switch-time)))
 
 ;; Theme
 

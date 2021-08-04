@@ -50,6 +50,11 @@ WHICH is a `nth' function to LIST."
   (find-font (font-spec :name name)))
 
 
+(defun lacquer-temporal-seconds (num temporal)
+  "Mapping TEMPORAL of NUM to durations in seconds."
+  (* num (cdr (assoc temporal timer-duration-words))))
+
+
 (provide 'utils)
 
 ;;; utils.el ends here
