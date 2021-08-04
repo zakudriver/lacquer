@@ -13,13 +13,13 @@ ps: using it with `which-key' is recommended.
 - Generate interactive function automatically.
 
 * Screencast
-[[./theme-selector.png]]
+[[./imgs/theme-selector.png]]
 
-[[./theme-keys.png]]
+[[./imgs/theme-keys.png]]
 
-[[./font-selector.png]]
+[[./imgs/font-selector.png]]
 
-[[./font-keys.png]]
+[[./imgs/font-keys.png]]
  
 * Installation
 Download el file to your load-path.
