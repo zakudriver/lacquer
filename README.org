@@ -1,6 +1,7 @@
 #+TITLE:Lacquer 
 
-Lacquer is a util that switches theme/font/font-size and to configure cache ;)
+Lacquer is a util that switches theme/font/font-size and to configure cache, and switch themes automatically ;)
+
 #+BEGIN_QUOTE
 ps: using it with `which-key' is recommended.
 #+END_QUOTE
@@ -11,6 +12,7 @@ ps: using it with `which-key' is recommended.
 - Each theme can be configured individually.
 - Download unused themes automatically with package.el.
 - Generate interactive function automatically.
+- Automatically change themes depending on a time schedule created by users.
 
 * Screencast
 [[./imgs/theme-selector.png]]
