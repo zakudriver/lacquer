@@ -86,7 +86,7 @@ Return string."
           (t nil))))
 
 
-(cl-defmethod cls-init ((this lacquer-setting-cls))
+(cl-defmethod cls-init-setting ((this lacquer-setting-cls))
   "Init THIS."
   (cl-loop for (k . v) in (oref this cls-setting)
            do (setf (cdr

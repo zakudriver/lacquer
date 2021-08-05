@@ -119,7 +119,7 @@ Optional: config.Any function."
           (const :tag "Random" :value random)))
 
 
-(defcustom lacquer/auto-switch-time (lacquer-temporal-seconds 1 "hour")
+(defcustom lacquer/auto-switch-time (lacquer-time-word-seconds 1 "hour")
   "When it's list,  switch themes at time of list item every day.
 When it's integer, switch themes for every THIS seconds"
   :group 'lacquer
@@ -257,7 +257,7 @@ Optional: config.Any function."
                                           (cons "font" lacquer/default-font)
                                           (cons "font-size" lacquer/default-font-size)
                                           (cons "mode" lacquer/auto-switch-mode))))
-  (cls-init lacquer/setting-instance))
+  (cls-init-setting lacquer/setting-instance))
 
 
 (defun lacquer-new-automation ()
@@ -367,11 +367,8 @@ CONFIG: theme config."
                         :sort nil
                         :require-match t
                         :preselect selected)))
-    (when (functionp func)
-      (funcall func str)
-      
-      )
-    ))
+    (if (functionp func)
+        (funcall func str))))
 
 
 ;;;###autoload
@@ -461,7 +458,6 @@ CONFIG: theme config."
   (interactive)
   (cls-stop lacquer/automation-instance))
 
-
 ;;;;; Keymaps
 
 (cl-defun lacquer-generate-map (&key map list prefix-key which)
@@ -510,8 +506,8 @@ When AUTO is `no-nil' execute switch theme automatically."
    :prefix-key lacquer/font-prefix-key)
   
   (cls-call lacquer/setting-instance)
-  (when auto
-    (lacquer-start-auto-switch))
+  (if auto
+      (lacquer-start-auto-switch))
   (setq lacquer/started t))
 
 
