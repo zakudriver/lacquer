@@ -110,6 +110,3 @@ If now less than time return t."
 (provide 'utils)
 
 ;;; utils.el ends here
-
-(lacquer-time-add "12:00" 3600)
-(time-add (decode-time (lacquer-hhmm-to-time "12:00")) 3600)

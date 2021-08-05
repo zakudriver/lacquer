@@ -191,6 +191,12 @@ Optional: config.Any function."
   :type 'string)
 
 
+(defcustom lacquer/mode-selector-key "C-c T M"
+  "Mode selector bind key."
+  :group 'lacquer
+  :type 'string)
+
+
 (defcustom lacquer/font-increase-key "C-c F +"
   "Font increase bind key."
   :group 'lacquer
@@ -217,6 +223,18 @@ Optional: config.Any function."
 
 (defcustom lacquer/theme-carousel-key "C-c T C"
   "Theme carousel bind key."
+  :group 'lacquer
+  :type 'string)
+
+
+(defcustom lacquer/start-auto-switch-key "C-c T A"
+  "Start swtich theme automatically bind key."
+  :group 'lacquer
+  :type 'string)
+
+
+(defcustom lacquer/stop-auto-switch-key "C-c T P"
+  "Stop swtich theme automatically bind key."
   :group 'lacquer
   :type 'string)
 
@@ -481,9 +499,9 @@ CONFIG: theme config."
 (define-key lacquer-mode-map (kbd lacquer/font-increase-key) 'lacquer-font-size-increase)
 (define-key lacquer-mode-map (kbd lacquer/font-decrease-key) 'lacquer-font-size-decrease)
 (define-key lacquer-mode-map (kbd lacquer/theme-carousel-key) 'lacquer-theme-carousel)
-(define-key lacquer-mode-map (kbd "C-c T M") 'lacquer-mode-selector)
-(define-key lacquer-mode-map (kbd "C-c T A") 'lacquer-start-auto-switch)
-(define-key lacquer-mode-map (kbd "C-c T P") 'lacquer-stop-auto-switch)
+(define-key lacquer-mode-map (kbd lacquer/mode-selector-key) 'lacquer-mode-selector)
+(define-key lacquer-mode-map (kbd lacquer/start-auto-switch-key) 'lacquer-start-auto-switch)
+(define-key lacquer-mode-map (kbd lacquer/stop-auto-switch-key) 'lacquer-stop-auto-switch)
 
 ;; Minor-mode
 
