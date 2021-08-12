@@ -393,47 +393,45 @@ CONFIG: theme config."
 (defun lacquer-theme-selector ()
   "Open theme selector in the minibuffer."
   (interactive)
-  (with-eval-after-load 'ivy
-    (lacquer-make-selector
-     :list lacquer/theme-list
-     :current (cls-get lacquer/setting-instance "theme")
-     :select-list lacquer/theme-name-list
-     :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "theme")))
-     :which (lambda (v) (nth 1 v))
-     :func (lambda (value)
-             (if (fboundp value)
-                 (funcall value)
-               (message (format "<%s> is no existing." value)))))))
+  (lacquer-make-selector
+   :list lacquer/theme-list
+   :current (cls-get lacquer/setting-instance "theme")
+   :select-list lacquer/theme-name-list
+   :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "theme")))
+   :which (lambda (v) (nth 1 v))
+   :func (lambda (value)
+           (if (fboundp value)
+               (funcall value)
+             (message (format "<%s> is no existing." value))))))
 
 
 ;;;###autoload
 (defun lacquer-font-selector ()
   "Open font selector in the minibuffer."
   (interactive)
-  (with-eval-after-load 'ivy
-    (lacquer-make-selector
-     :list lacquer/font-list
-     :current (cls-get lacquer/setting-instance "font")
-     :select-list lacquer/font-list
-     :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font")))
-     :func (lambda (value)
-             (if (fboundp value)
-                 (funcall value)
-               (message (format "<%s> is no existing." value)))))))
+  (lacquer-make-selector
+   :list lacquer/font-list
+   :current (cls-get lacquer/setting-instance "font")
+   :select-list lacquer/font-list
+   :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font")))
+   :func (lambda (value)
+           (if (fboundp value)
+               (funcall value)
+             (message (format "<%s> is no existing." value))))))
 
 
 ;;;###autoload
 (defun lacquer-mode-selector ()
   "Open mode selector in the minibuffer."
   (interactive)
-  (with-eval-after-load 'ivy
-    (lacquer-make-selector
-     :list lacquer/mode-list
-     :current (cls-get lacquer/setting-instance "mode")
-     :select-list lacquer/mode-list
-     :prompt (format "Current mode is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "mode")))
-     :func (lambda (value)
-             (cls-set lacquer/setting-instance "mode" (intern value))))))
+  
+  (lacquer-make-selector
+   :list lacquer/mode-list
+   :current (cls-get lacquer/setting-instance "mode")
+   :select-list lacquer/mode-list
+   :prompt (format "Current mode is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "mode")))
+   :func (lambda (value)
+           (cls-set lacquer/setting-instance "mode" (intern value)))))
 
 ;; Carousel
 
