@@ -48,8 +48,8 @@
 ;;     :hook
 ;;     (after-init . lacquer-mode)
 ;;     :custom
-;;     (lacquer/cache "~/.emacs.d/.lacquer")
-;;     (lacquer/theme-list '((monokai-theme monokai)
+;;     (lacquer-cache "~/.emacs.d/.lacquer")
+;;     (lacquer-theme-list '((monokai-theme monokai)
 ;;                           (monokai-pro-theme monokai-pro)
 ;;                           (dracula-theme dracula)
 ;;                           (doom-themes doom-one-light)
@@ -57,7 +57,7 @@
 ;;                           (doom-themes doom-nord)
 ;;                           (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
 ;;                           (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))))
-;;     (lacquer/font-list '(Menlo
+;;     (lacquer-font-list '(Menlo
 ;;                          Roboto\ Mono
 ;;                          Anonymous\ Pro
 ;;                          FantasqueSansMono
@@ -66,7 +66,7 @@
 ;;                          Operator\ Mono
 ;;                          Inconsolata
 ;;                          Iosevka))
-;;     (lacquer/default-font-size 130))
+;;     (lacquer-default-font-size 130))
 
 
 ;;; Commentary:
@@ -91,7 +91,7 @@
 
 ;;;; Constants
 
-(defconst lacquer/mode-list '(orderly random)
+(defconst lacquer-mode-list '(orderly random)
   "Mode list.")
 
 ;;;; Customization
@@ -102,7 +102,7 @@
   :group 'utils)
 
 
-(defcustom lacquer/theme-list '((monokai-theme monokai))
+(defcustom lacquer-theme-list '((monokai-theme monokai))
   "Theme list.
 E.g: '((theme-package-name theme-name config)).
 Required: theme-package-name theme-name.
@@ -111,7 +111,7 @@ Optional: config.Any function."
   :type 'list)
 
 
-(defcustom lacquer/auto-switch-mode (car lacquer/mode-list)
+(defcustom lacquer-auto-switch-mode (car lacquer-mode-list)
   "Mode of switch theme automatically."
   :group 'lacquer
   :type '(choice
@@ -119,7 +119,7 @@ Optional: config.Any function."
           (const :tag "Random" :value random)))
 
 
-(defcustom lacquer/auto-switch-time (lacquer-time-word-seconds 1 "hour")
+(defcustom lacquer-auto-switch-time (lacquer-time-word-seconds 1 "hour")
   "When it's list,  switch themes at time of list item every day.
 When it's integer, switch themes for every THIS seconds"
   :group 'lacquer
@@ -127,13 +127,13 @@ When it's integer, switch themes for every THIS seconds"
                  (list :tag "Timelist" :value '("10:00" "15:00" "18:00"))))
 
 
-(defcustom lacquer/default-theme 'monokai
+(defcustom lacquer-default-theme 'monokai
   "Default theme."
   :group 'lacquer
   :type 'symbol)
 
 
-(defcustom lacquer/font-list '(Menlo Fira\ Code)
+(defcustom lacquer-font-list '(Menlo Fira\ Code)
   "Font list.
 E.g: '((theme-package-name theme-name config)).
 Required: theme-package-name theme-name.
@@ -141,36 +141,36 @@ Optional: config.Any function."
   :type 'list)
 
 
-(defcustom lacquer/default-font 'Menlo
+(defcustom lacquer-default-font 'Menlo
   "Default font."
   :group 'lacquer
   :type 'symbol)
 
 
-(defcustom lacquer/default-font-size 135
+(defcustom lacquer-default-font-size 135
   "Default font size."
   :type 'integer)
 
 
-(defcustom lacquer/cache (concat user-emacs-directory ".lacquer")
+(defcustom lacquer-cache (concat user-emacs-directory ".lacquer")
   "Path of cache."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/theme-prefix-key "C-c T"
+(defcustom lacquer-theme-prefix-key "C-c T"
   "Trigger theme of prefix key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/font-prefix-key "C-c F"
+(defcustom lacquer-font-prefix-key "C-c F"
   "Trigger of prefix key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/keys-map-index
+(defcustom lacquer-keys-map-index
   (append (lacquer-generate-keys-index-list)
           '("a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y")
           (lacquer-generate-keys-index-list "z"))
@@ -179,116 +179,118 @@ Optional: config.Any function."
   :type 'list)
 
 
-(defcustom lacquer/theme-selector-key "C-c T S"
+(defcustom lacquer-theme-selector-key "C-c T S"
   "Theme selector bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/font-selector-key "C-c F S"
+(defcustom lacquer-font-selector-key "C-c F S"
   "Font selector bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/mode-selector-key "C-c T M"
+(defcustom lacquer-mode-selector-key "C-c T M"
   "Mode selector bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/font-increase-key "C-c F +"
+(defcustom lacquer-font-increase-key "C-c F +"
   "Font increase bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/font-decrease-key "C-c F _"
+(defcustom lacquer-font-decrease-key "C-c F _"
   "Font increase bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/current-theme-key "C-c T 0"
+(defcustom lacquer-current-theme-key "C-c T 0"
   "Current theme bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/current-font-key "C-c F 0"
+(defcustom lacquer-current-font-key "C-c F 0"
   "Current theme bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/theme-carousel-key "C-c T C"
+(defcustom lacquer-theme-carousel-key "C-c T C"
   "Theme carousel bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/start-auto-switch-key "C-c T A"
+(defcustom lacquer-start-auto-switch-key "C-c T A"
   "Start swtich theme automatically bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/stop-auto-switch-key "C-c T P"
+(defcustom lacquer-stop-auto-switch-key "C-c T P"
   "Stop swtich theme automatically bind key."
   :group 'lacquer
   :type 'string)
 
 
-(defcustom lacquer/font-size-step 5
+(defcustom lacquer-font-size-step 5
   "Change font size of step."
   :group 'lacquer
   :type 'integer)
 
 ;;;; Variables
 
-(defvar lacquer/started nil
+(defvar lacquer-started nil
   "Lacquer mode has started.")
 
 
-(defvar lacquer/theme-name-list (mapcar #'(lambda (i) (nth 1 i)) lacquer/theme-list)
+(defvar lacquer-theme-name-list (mapcar #'(lambda (i) (nth 1 i)) lacquer-theme-list)
   "Theme name list.")
 
 
-(defvar lacquer/setting-instance nil
+(defvar lacquer-setting-instance nil
   "Setting instance.")
 
 
-(defvar lacquer/automation-instance nil
+(defvar lacquer-automation-instance nil
   "Automation instance.")
 
 ;;;;; Private
 
 (defun lacquer-new-setting ()
   "New setting instance."
-  (setq lacquer/setting-instance
-        (make-instance 'lacquer-setting-cls
-                       :cls-cache-path lacquer/cache
-                       :cls-theme-list lacquer/theme-list
-                       :cls-font-list lacquer/font-list
-                       :cls-cache-str (lacquer-read-path lacquer/cache)
-                       :cls-setting (list (cons "theme" lacquer/default-theme)
-                                          (cons "font" lacquer/default-font)
-                                          (cons "font-size" lacquer/default-font-size)
-                                          (cons "mode" lacquer/auto-switch-mode))))
-  (cls-init-setting lacquer/setting-instance))
+  (unless lacquer-setting-instance
+    (setq lacquer-setting-instance
+          (make-instance 'lacquer-setting-cls
+                         :cache-path lacquer-cache
+                         :theme-list lacquer-theme-list
+                         :font-list lacquer-font-list
+                         :cache-str (lacquer-read-path lacquer-cache)
+                         :setting (list (cons "theme" lacquer-default-theme)
+                                        (cons "font" lacquer-default-font)
+                                        (cons "font-size" lacquer-default-font-size)
+                                        (cons "mode" lacquer-auto-switch-mode))))
+    (lacquer-cls-init-setting lacquer-setting-instance)))
 
 
 (defun lacquer-new-automation ()
   "New automation instance."
-  (setq lacquer/automation-instance
-        (make-instance 'lacquer-automation-cls
-                       :cls-time lacquer/auto-switch-time)))
+  (unless lacquer-automation-instance
+    (setq lacquer-automation-instance
+          (make-instance 'lacquer-automation-cls
+                         :time lacquer-auto-switch-time))))
 
 ;; Theme
 
 (defmacro lacquer-theme-factory-macro (index name load-name &rest config)
   "Theme factory macro.
-INDEX: index in lacquer/theme-list
+INDEX: index in lacquer-theme-list
 NAME: theme package name.
 LOAD-NAME: theme name.
 CONFIG: theme config."
@@ -296,12 +298,12 @@ CONFIG: theme config."
      (unless (package-installed-p (quote ,name))
        (package-install (quote ,name)))
      (when (symbolp (quote ,load-name))
-       (disable-theme (cls-get lacquer/setting-instance "theme"))
+       (disable-theme (lacquer-cls-get lacquer-setting-instance "theme"))
        (load-theme (quote ,load-name) t)
        ,@config
 
-       (cls-set lacquer/setting-instance "theme" (quote ,load-name))
-       (cls-set-index lacquer/setting-instance "theme" ,index)
+       (lacquer-cls-set lacquer-setting-instance "theme" (quote ,load-name))
+       (lacquer-cls-set-index lacquer-setting-instance "theme" ,index)
        (message (format "<%s> loaded successfully."
                         (symbol-name (quote ,load-name)))))))
 
@@ -316,8 +318,8 @@ CONFIG: theme config."
   "Font factory macro by FONT and INDEX."
   `(progn
      (set-face-attribute 'default nil :font (symbol-name (quote ,font)))
-     (cls-set-index lacquer/setting-instance "font" ,index)
-     (cls-set lacquer/setting-instance "font" (quote ,font))))
+     (lacquer-cls-set-index lacquer-setting-instance "font" ,index)
+     (lacquer-cls-set lacquer-setting-instance "font" (quote ,font))))
 
 
 (defun lacquer-font-factory (font index)
@@ -345,14 +347,14 @@ CONFIG: theme config."
 (defun lacquer-font-size-operate (size)
   "Change font SIZE."
   (set-face-attribute 'default nil :height size)
-  (cls-set lacquer/setting-instance "font-size" size)
+  (lacquer-cls-set lacquer-setting-instance "font-size" size)
   (message "Current font size: <%s>." size))
 
 ;; Automatically
 
 (defun lacquer-switch-next-theme ()
-  "Switch next theme from lacquer/auto-switch-mode."
-  (funcall (cls-get-next lacquer/setting-instance "theme")))
+  "Switch next theme from lacquer-auto-switch-mode."
+  (funcall (lacquer-cls-get-next lacquer-setting-instance "theme")))
 
 ;;;;; Public
 
@@ -360,14 +362,14 @@ CONFIG: theme config."
 (defun lacquer-current-theme ()
   "Current theme."
   (interactive)
-  (message "Current theme: <%s>." (symbol-name (cls-get lacquer/setting-instance "theme"))))
+  (message "Current theme: <%s>." (symbol-name (lacquer-cls-get lacquer-setting-instance "theme"))))
 
 
 ;;;###autoload
 (defun lacquer-current-font ()
   "Current font."
   (interactive)
-  (message "Current font: <%s>." (symbol-name (cls-get lacquer/setting-instance "font"))))
+  (message "Current font: <%s>." (symbol-name (lacquer-cls-get lacquer-setting-instance "font"))))
 
 ;; Selector
 
@@ -394,15 +396,16 @@ CONFIG: theme config."
   "Open theme selector in the minibuffer."
   (interactive)
   (lacquer-make-selector
-   :list lacquer/theme-list
-   :current (cls-get lacquer/setting-instance "theme")
-   :select-list lacquer/theme-name-list
-   :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "theme")))
+   :list lacquer-theme-list
+   :current (lacquer-cls-get lacquer-setting-instance "theme")
+   :select-list lacquer-theme-name-list
+   :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (lacquer-cls-get lacquer-setting-instance "theme")))
    :which (lambda (v) (nth 1 v))
    :func (lambda (value)
-           (if (fboundp value)
-               (funcall value)
-             (message (format "<%s> is no existing." value))))))
+           (let ((theme (intern value)))
+             (if (fboundp theme)
+                 (funcall theme)
+               (message (format "<%s> is no existing." theme)))))))
 
 
 ;;;###autoload
@@ -410,28 +413,28 @@ CONFIG: theme config."
   "Open font selector in the minibuffer."
   (interactive)
   (lacquer-make-selector
-   :list lacquer/font-list
-   :current (cls-get lacquer/setting-instance "font")
-   :select-list lacquer/font-list
-   :prompt (format "Current font is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "font")))
+   :list lacquer-font-list
+   :current (lacquer-cls-get lacquer-setting-instance "font")
+   :select-list lacquer-font-list
+   :prompt (format "Current font is <%s>. Please choose: " (symbol-name (lacquer-cls-get lacquer-setting-instance "font")))
    :func (lambda (value)
-           (if (fboundp value)
-               (funcall value)
-             (message (format "<%s> is no existing." value))))))
+           (let ((font (intern value)))
+             (if (fboundp font)
+                 (funcall font)
+               (message (format "<%s> is no existing." font)))))))
 
 
 ;;;###autoload
 (defun lacquer-mode-selector ()
   "Open mode selector in the minibuffer."
   (interactive)
-  
   (lacquer-make-selector
-   :list lacquer/mode-list
-   :current (cls-get lacquer/setting-instance "mode")
-   :select-list lacquer/mode-list
-   :prompt (format "Current mode is <%s>. Please choose: " (symbol-name (cls-get lacquer/setting-instance "mode")))
+   :list lacquer-mode-list
+   :current (lacquer-cls-get lacquer-setting-instance "mode")
+   :select-list lacquer-mode-list
+   :prompt (format "Current mode is <%s>. Please choose: " (symbol-name (lacquer-cls-get lacquer-setting-instance "mode")))
    :func (lambda (value)
-           (cls-set lacquer/setting-instance "mode" (intern value)))))
+           (lacquer-cls-set lacquer-setting-instance "mode" (intern value)))))
 
 ;; Carousel
 
@@ -447,7 +450,7 @@ CONFIG: theme config."
 (defun lacquer-font-size-increase ()
   "Font size increase."
   (interactive)
-  (let ((size (+ (cls-get lacquer/setting-instance "font-size") lacquer/font-size-step)))
+  (let ((size (+ (lacquer-cls-get lacquer-setting-instance "font-size") lacquer-font-size-step)))
     (lacquer-font-size-operate size)))
 
 
@@ -455,7 +458,7 @@ CONFIG: theme config."
 (defun lacquer-font-size-decrease ()
   "Font size decrease."
   (interactive)
-  (let ((size (- (cls-get lacquer/setting-instance "font-size") lacquer/font-size-step)))
+  (let ((size (- (lacquer-cls-get lacquer-setting-instance "font-size") lacquer-font-size-step)))
     (lacquer-font-size-operate size)))
 
 
@@ -463,16 +466,15 @@ CONFIG: theme config."
 (defun lacquer-start-auto-switch ()
   "Start swtich theme automatically."
   (interactive)
-  (unless lacquer/automation-instance
-    (lacquer-new-automation))
-  (cls-run lacquer/automation-instance #'lacquer-switch-next-theme))
+  (lacquer-new-automation)
+  (lacquer-cls-run lacquer-automation-instance #'lacquer-switch-next-theme))
 
 
 ;;;###autoload
 (defun lacquer-stop-auto-switch ()
   "Stop switch theme automatically."
   (interactive)
-  (cls-stop lacquer/automation-instance))
+  (lacquer-cls-stop lacquer-automation-instance))
 
 ;;;;; Keymaps
 
@@ -481,7 +483,7 @@ CONFIG: theme config."
   (cl-loop with i = 0
            for v in list
            do (progn
-                (define-key map (kbd (concat prefix-key " " (nth i lacquer/keys-map-index))) (if (functionp which) (funcall which v) v))
+                (define-key map (kbd (concat prefix-key " " (nth i lacquer-keys-map-index))) (if (functionp which) (funcall which v) v))
                 (cl-incf i))
            finally return map))
 
@@ -490,16 +492,16 @@ CONFIG: theme config."
   "Lacquer keymap.")
 
 
-(define-key lacquer-mode-map (kbd lacquer/current-theme-key) 'lacquer-current-theme)
-(define-key lacquer-mode-map (kbd lacquer/current-font-key) 'lacquer-current-font)
-(define-key lacquer-mode-map (kbd lacquer/theme-selector-key) 'lacquer-theme-selector)
-(define-key lacquer-mode-map (kbd lacquer/font-selector-key) 'lacquer-font-selector)
-(define-key lacquer-mode-map (kbd lacquer/font-increase-key) 'lacquer-font-size-increase)
-(define-key lacquer-mode-map (kbd lacquer/font-decrease-key) 'lacquer-font-size-decrease)
-(define-key lacquer-mode-map (kbd lacquer/theme-carousel-key) 'lacquer-theme-carousel)
-(define-key lacquer-mode-map (kbd lacquer/mode-selector-key) 'lacquer-mode-selector)
-(define-key lacquer-mode-map (kbd lacquer/start-auto-switch-key) 'lacquer-start-auto-switch)
-(define-key lacquer-mode-map (kbd lacquer/stop-auto-switch-key) 'lacquer-stop-auto-switch)
+(define-key lacquer-mode-map (kbd lacquer-current-theme-key) 'lacquer-current-theme)
+(define-key lacquer-mode-map (kbd lacquer-current-font-key) 'lacquer-current-font)
+(define-key lacquer-mode-map (kbd lacquer-theme-selector-key) 'lacquer-theme-selector)
+(define-key lacquer-mode-map (kbd lacquer-font-selector-key) 'lacquer-font-selector)
+(define-key lacquer-mode-map (kbd lacquer-font-increase-key) 'lacquer-font-size-increase)
+(define-key lacquer-mode-map (kbd lacquer-font-decrease-key) 'lacquer-font-size-decrease)
+(define-key lacquer-mode-map (kbd lacquer-theme-carousel-key) 'lacquer-theme-carousel)
+(define-key lacquer-mode-map (kbd lacquer-mode-selector-key) 'lacquer-mode-selector)
+(define-key lacquer-mode-map (kbd lacquer-start-auto-switch-key) 'lacquer-start-auto-switch)
+(define-key lacquer-mode-map (kbd lacquer-stop-auto-switch-key) 'lacquer-stop-auto-switch)
 
 ;; Minor-mode
 
@@ -508,23 +510,23 @@ CONFIG: theme config."
 When AUTO is `no-nil' execute switch theme automatically."
   (lacquer-new-setting)
   
-  (lacquer-macro-factory lacquer/theme-list lacquer-theme-factory)
-  (lacquer-macro-factory lacquer/font-list lacquer-font-factory)
+  (lacquer-macro-factory lacquer-theme-list lacquer-theme-factory)
+  (lacquer-macro-factory lacquer-font-list lacquer-font-factory)
   
   (lacquer-generate-map
    :map lacquer-mode-map
-   :list lacquer/theme-list
-   :prefix-key lacquer/theme-prefix-key
+   :list lacquer-theme-list
+   :prefix-key lacquer-theme-prefix-key
    :which (lambda (v) (nth 1 v)))
   (lacquer-generate-map
    :map lacquer-mode-map
-   :list lacquer/font-list
-   :prefix-key lacquer/font-prefix-key)
+   :list lacquer-font-list
+   :prefix-key lacquer-font-prefix-key)
   
-  (cls-call lacquer/setting-instance)
+  (lacquer-cls-call lacquer-setting-instance)
   (if auto
       (lacquer-start-auto-switch))
-  (setq lacquer/started t))
+  (setq lacquer-started t))
 
 
 ;;;###autoload
@@ -535,7 +537,7 @@ When AUTO is `no-nil' execute switch theme automatically."
   :keymap lacquer-mode-map
   :global t
   :lighter nil
-  (unless lacquer/started
+  (unless lacquer-started
     (lacquer-start-up)))
 
 
@@ -547,7 +549,7 @@ When AUTO is `no-nil' execute switch theme automatically."
   :keymap lacquer-mode-map
   :global t
   :lighter nil
-  (unless lacquer/started
+  (unless lacquer-started
     (lacquer-start-up t)))
 
 
