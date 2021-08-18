@@ -130,6 +130,15 @@ If now less than time return t."
     (time-less-p now time)))
 
 
+(defun lacquer-map-incf (map func list)
+  "MAP to incf index.
+FUNC and LIST like `mapc' or `mapcar'."
+  (let ((index -1))
+    (funcall map #'(lambda (arg)
+              (cl-incf index)
+              (funcall func arg index)) list)))
+
+
 (provide 'utils)
 
 ;;; utils.el ends here

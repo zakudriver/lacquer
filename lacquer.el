@@ -286,6 +286,15 @@ Optional: config.Any function."
           (make-instance 'lacquer-automation-cls
                          :time lacquer-auto-switch-time))))
 
+
+(defun lacquer-interactive-factory (name body)
+  "Generate interactive function factory by NAME and BODY."
+  (defalias name
+    `(lambda ()
+       "Lacquer interactive."
+       (interactive)
+       ,body)))
+
 ;; Theme
 
 (defmacro lacquer-theme-factory-macro (index name load-name &rest config)
@@ -325,14 +334,6 @@ CONFIG: theme config."
 (defun lacquer-font-factory (font index)
   "Make params of theme factory function by FONT and INDEX."
   (lacquer-interactive-factory font `(lacquer-font-factory-macro ,index ,font)))
-
-
-(defun lacquer-interactive-factory (name body)
-  "Generate interactive function factory by NAME and BODY."
-  `(defun ,name ()
-     "Lacquer interactive."
-     (interactive)
-     ,body))
 
 
 (defmacro lacquer-macro-factory (list func)
@@ -510,8 +511,8 @@ CONFIG: theme config."
 When AUTO is `no-nil' execute switch theme automatically."
   (lacquer-new-setting)
   
-  (lacquer-macro-factory lacquer-theme-list lacquer-theme-factory)
-  (lacquer-macro-factory lacquer-font-list lacquer-font-factory)
+  (lacquer-map-incf #'mapc #'lacquer-theme-factory lacquer-theme-list)
+  (lacquer-map-incf #'mapc #'lacquer-font-factory lacquer-font-list)
   
   (lacquer-generate-map
    :map lacquer-mode-map
