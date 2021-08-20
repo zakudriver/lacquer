@@ -33,6 +33,7 @@
 
 ;; + cl-lib
 ;; + ivy
+;; + seq
 
 ;;; Usage
 
@@ -84,6 +85,7 @@
 
 (require 'cl-lib)
 (require 'ivy)
+(require 'seq)
 (require 'utils)
 (require 'setting)
 (require 'automation)
@@ -285,6 +287,11 @@ Optional: config.Any function."
     (setq lacquer-automation-instance
           (make-instance 'lacquer-automation-cls
                          :time lacquer-auto-switch-time))))
+
+
+(defun lacquer-font-installed-filter ()
+  "Filter font list if it's installed."
+  (seq-filter #'lacquer-font-installed-p lacquer-font-list))
 
 
 (defun lacquer-interactive-factory (name body)
@@ -510,7 +517,8 @@ CONFIG: theme config."
   "Start up.
 When AUTO is `no-nil' execute switch theme automatically."
   (lacquer-new-setting)
-  
+  (setq lacquer-font-list (lacquer-font-installed-filter))
+
   (lacquer-map-incf #'mapc #'lacquer-theme-factory lacquer-theme-list)
   (lacquer-map-incf #'mapc #'lacquer-font-factory lacquer-font-list)
   

@@ -71,6 +71,8 @@ WHICH is a `nth' function to LIST."
 
 (defun lacquer-font-installed-p (name)
   "Check if string of NAME is available."
+  (if (symbolp name)
+      (setq name (symbol-name name)))
   (find-font (font-spec :name name)))
 
 
@@ -135,8 +137,8 @@ If now less than time return t."
 FUNC and LIST like `mapc' or `mapcar'."
   (let ((index -1))
     (funcall map #'(lambda (arg)
-              (cl-incf index)
-              (funcall func arg index)) list)))
+                     (cl-incf index)
+                     (funcall func arg index)) list)))
 
 
 (provide 'utils)
