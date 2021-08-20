@@ -516,8 +516,8 @@ CONFIG: theme config."
 (defun lacquer-start-up (&optional auto)
   "Start up.
 When AUTO is `no-nil' execute switch theme automatically."
-  (lacquer-new-setting)
   (setq lacquer-font-list (lacquer-font-installed-filter))
+  (lacquer-new-setting)
 
   (lacquer-map-incf #'mapc #'lacquer-theme-factory lacquer-theme-list)
   (lacquer-map-incf #'mapc #'lacquer-font-factory lacquer-font-list)
