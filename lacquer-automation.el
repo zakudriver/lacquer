@@ -43,9 +43,13 @@
 (defclass lacquer-automation-cls ()
   ((lacquer-cls-time :initarg :time
                      :initform 0
+                     :custom (choice
+                              (const :tag "Orderly" 'orderly)
+                              (const :tag "Random" 'random))
                      :documentation "Time.")
    (lacquer-cls-timer :initarg :timer
                       :initform nil
+                      :custom timer
                       :documentation "Timer."))
   "Lacquer automation self.")
 

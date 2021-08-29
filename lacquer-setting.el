@@ -54,22 +54,26 @@
    (lacquer-cls-font-list :initarg :font-list
                           :initform nil
                           :type list
-                          :custom list
+                          :custom string
                           :documentation "Font list.")
    (lacquer-cls-setting :initarg :setting
-                        :initform '(("theme" . nil)
-                                    ("font" . nil)
-                                    ("font-size" . 0)
-                                    ("mode" . nil))
-                        :type list
-                        :custom list
+                        :initform '(("theme" nil)
+                                    ("font" nil)
+                                    ("font-size" 0)
+                                    ("mode" nil))
+                        :custom (set (cons :tag "Theme" (const "theme") symbol)
+                                     (cons :tag "Font" (const "font") symbol)
+                                     (cons :tag "Font-size" (const "font-size") integer)
+                                     (cons :tag "Mode" (const "mode") (choice
+                                                                       (const :tag "Orderly" 'orderly)
+                                                                       (const :tag "Random" 'random))))
                         :documentation "Currnet setting.(theme, font, font-size and mode).")
    (lacquer-cls-index :initarg :theme-index
-                      :initform '(("theme" . 0)
-                                  ("font" . 0))
-                      :type list
-                      :custom list
-                      :documentation "Current theme/font index."))
+                      :initform '(("theme" 0)
+                                  ("font" 0))
+                      :custom (set (cons :tag "Current index in the theme list." (const "theme") integer)
+                                   (cons :tag "Current index in the font list." (const "font") integer))
+                      :documentation "Current index in the theme and font list."))
   "Lacquer setting self.")
 
 

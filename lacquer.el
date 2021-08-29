@@ -1,4 +1,4 @@
-;;; lacquer.el --- A util that switches theme/font and to configure cache  -*- lexical-binding: t; -*-
+;;; lacquer.el --- Switch theme/font by selecting from a cache.  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
@@ -110,23 +110,23 @@ E.g: '((theme-package-name theme-name config)).
 Required: theme-package-name theme-name.
 Optional: config.Any function."
   :group 'lacquer
-  :type 'list)
+  :type '(alist :value-type (group symbol symbol function)))
 
 
 (defcustom lacquer-auto-switch-mode (car lacquer-mode-list)
   "Mode of switch theme automatically."
   :group 'lacquer
   :type '(choice
-          (const :tag "Orderly" :value 'orderly)
-          (const :tag "Random" :value 'random)))
+          (const :tag "Orderly" 'orderly)
+          (const :tag "Random" 'random)))
 
 
 (defcustom lacquer-auto-switch-time (lacquer-time-word-seconds 1 "hour")
   "When it's list,  switch themes at time of list item every day.
 When it's integer, switch themes for every some seconds"
   :group 'lacquer
-  :type '(choice (integer :tag "Relativetime" :value 3600)
-                 (list :tag "Timelist" :value '("10:00" "15:00" "18:00"))))
+  :type '(choice (integer :tag "Time of relativetime." :value 3600)
+                 (list :tag "List of switching." :value '("10:00" "15:00" "18:00"))))
 
 
 (defcustom lacquer-default-theme 'monokai
@@ -137,7 +137,7 @@ When it's integer, switch themes for every some seconds"
 
 (defcustom lacquer-font-list '(Menlo Fira\ Code)
   "Font list."
-  :type 'list)
+  :type '(group symbol))
 
 
 (defcustom lacquer-default-font 'Menlo
@@ -175,7 +175,7 @@ When it's integer, switch themes for every some seconds"
           (lacquer-generate-keys-index-list "z"))
   "Keys map index."
   :group 'lacquer
-  :type 'list)
+  :type '(group string))
 
 
 (defcustom lacquer-theme-selector-key "C-c T S"
