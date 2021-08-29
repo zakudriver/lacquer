@@ -49,7 +49,7 @@
 ;;     :hook
 ;;     (after-init . lacquer-mode)
 ;;     :custom
-;;     (lacquer-cache "~/.emacs.d/.lacquer")
+;;     (lacquer-cache "~/.emacs.d/.lacquer.el")
 ;;     (lacquer-theme-list '((monokai-theme monokai)
 ;;                           (monokai-pro-theme monokai-pro)
 ;;                           (dracula-theme dracula)

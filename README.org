@@ -40,7 +40,7 @@ Download el file to your load-path.
       :hook
       (after-init . lacquer-auto-mode)
       :custom
-      (lacquer-cache "~/.emacs.d/.lacquer")
+      (lacquer-cache "~/.emacs.d/.lacquer.el")
       (lacquer-auto-switch-time '("10:00" "12:00" "15:00" "17:00")) ;; (lacquer-auto-switch-time 3600) ;; switch every hour.
       (lacquer-auto-switch-mode 'random)
       (lacquer-theme-list '((monokai-theme monokai)
