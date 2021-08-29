@@ -6,12 +6,11 @@ Lacquer is a util that switches theme/font/font-size and to configure cache, and
 ps: using it with `which-key' is recommended.
 #+END_QUOTE
 
-* About
-#+BEGIN_VERSE
+#+BEGIN_QUOTE
 Lacquer is more than a combination of [[https://github.com/guidoschmidt/circadian.el][circadian]] and [[https://github.com/toroidal-code/cycle-themes.el][cycle-themes]].
 It has so many new features, such as, allows users to switch themes and fonts in a more convenient way, to customize each theme,
 also to define specifically when to switch themes automatically.
-#+END_VERSE
+#+END_QUOTE
 
 * Features
 - Use both the seletor and the shortcut key to switch themes/font.
