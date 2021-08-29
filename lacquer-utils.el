@@ -1,4 +1,4 @@
-;;; utils.el --- Extend for lacquer  -*- lexical-binding: t; -*-
+;;; lacquer-utils.el --- Extend for lacquer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
@@ -141,6 +141,6 @@ FUNC and LIST like `mapc' or `mapcar'."
                      (funcall func arg index)) list)))
 
 
-(provide 'utils)
+(provide 'lacquer-utils)
 
-;;; utils.el ends here
+;;; lacquer-utils.el ends here

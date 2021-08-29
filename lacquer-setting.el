@@ -1,4 +1,4 @@
-;;; setting.el --- Setting about lacquer  -*- lexical-binding: t; -*-
+;;; lacquer-setting.el --- Setting about lacquer  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
@@ -37,7 +37,7 @@
 
 (require 'cl-lib)
 (require 'eieio)
-(require 'utils)
+(require 'lacquer-utils)
 
 
 (defclass lacquer-setting-cls ()
@@ -56,11 +56,6 @@
                           :type list
                           :custom list
                           :documentation "Font list.")
-   (lacquer-cls-cache-str :initarg :cache-str
-                          :initform ""
-                          :type string
-                          :custom string
-                          :documentation "Cache(string) of read `lacquer-cache'.")
    (lacquer-cls-setting :initarg :setting
                         :initform '(("theme" . nil)
                                     ("font" . nil)
@@ -78,43 +73,37 @@
   "Lacquer setting self.")
 
 
-(cl-defmethod lacquer-cls-parse-cache ((this lacquer-setting-cls) key)
-  "Parse THIS's string of cache by KEY.
-Return string."
-  (replace-regexp-in-string (regexp-quote (format "%s=" key))
-                            ""
-                            (if (string-match (format "^%s=.+$" key) (oref this lacquer-cls-cache-str))
-                                (match-string 0 (oref this lacquer-cls-cache-str))
-                              "")))
-
-
 (cl-defmethod lacquer-cls-check-setting ((this lacquer-setting-cls) key value)
   "Check THIS's setting value by KEY and VALUE, and return right value."
-  (if (string= value "")
-      (lacquer-cls-get this key)
-    (cond ((string= key "theme")
-           (let ((theme (intern value)))
-             (let ((index (lacquer-list-include
-                           (oref this lacquer-cls-theme-list) theme (lambda (v) (nth 1 v)))))
-               (if index
-                   theme (lacquer-cls-get this key)))))
-          ((string= key "font")
-           (let ((font (intern value)))
-             (if (and (lacquer-list-include (oref this lacquer-cls-font-list) font) (lacquer-font-installed-p value))
-                 font (lacquer-cls-get this key))))
-          ((string= key "font-size")
-           (if value (string-to-number value) (lacquer-cls-get this key)))
-          ((string= key "mode")
-           (if value (intern value) (lacquer-cls-get this key)))
-          (t nil))))
+  (lacquer-cls-get this key)
+  (cond ((string= key "theme")
+         (let ((index (lacquer-list-include
+                       (oref this lacquer-cls-theme-list) value (lambda (v) (nth 1 v)))))
+           (if index
+               value (lacquer-cls-get this key))))
+        ((string= key "font")
+         (if (and (lacquer-list-include (oref this lacquer-cls-font-list) value) (lacquer-font-installed-p value))
+             value (lacquer-cls-get this key)))
+        ((string= key "font-size")
+         (if (integerp value) value (lacquer-cls-get this key)))
+        ((string= key "mode")
+         (if (symbolp value) value (lacquer-cls-get this key)))
+        (t nil)))
 
 
 (cl-defmethod lacquer-cls-init-setting ((this lacquer-setting-cls))
   "Init THIS."
-  (cl-loop for (k . v) in (oref this lacquer-cls-setting)
-           do (setf (cdr
-                     (assoc k (oref this lacquer-cls-setting)))
-                    (lacquer-cls-check-setting this k (lacquer-cls-parse-cache this k)))))
+  (let* ((cache-path (oref this lacquer-cls-cache-path))
+         (setting
+          (if (file-exists-p cache-path)
+              (with-temp-buffer
+                (insert-file-contents cache-path)
+                (read (current-buffer)))
+            (oref this lacquer-cls-setting))))
+    (cl-loop for (k . v) in setting
+             do (setf (cdr
+                       (assoc k (oref this lacquer-cls-setting)))
+                      (lacquer-cls-check-setting this k v)))))
 
 
 (cl-defmethod lacquer-cls-call ((this lacquer-setting-cls))
@@ -145,12 +134,8 @@ Return symbol of theme or font, int of font-size."
 
 (cl-defmethod lacquer-cls-write-cache ((this lacquer-setting-cls))
   "Wirte THIS's' setting to cache."
-  (write-region
-   (cl-loop with str = ""
-            for (k . v) in (oref this lacquer-cls-setting)
-            do (setq str (concat str (format "%s=" k) (format "%s" v) "\n"))
-            finally return str)
-   nil (oref this lacquer-cls-cache-path)))
+  (with-temp-file (oref this lacquer-cls-cache-path)
+    (prin1 (oref this lacquer-cls-setting) (current-buffer))))
 
 
 (cl-defmethod lacquer-cls-get-index ((this lacquer-setting-cls) key)
@@ -197,6 +182,6 @@ MODE is lacquer-auto-switch-mode."
     (nth 1 (nth i list))))
 
 
-(provide 'setting)
+(provide 'lacquer-setting)
 
-;;; setting.el ends here
+;;; lacquer-setting.el ends here

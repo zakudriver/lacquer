@@ -1,4 +1,27 @@
-;;; automation.el --- Automation about lacquer  -*- lexical-binding: t; -*-
+;;; lacquer-automation.el --- Automation about lacquer  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2017 dingansich_kum0
+
+;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
+;; URL: https://example.com/package-name.el
+;; Version: 1.0
+;; Package-Requires: ((emacs "25.2") (ivy "0.13.4"))
+;; Keywords: tools
+
+;; This file is not part of GNU Emacs.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -14,7 +37,7 @@
 
 (require 'cl-lib)
 (require 'eieio)
-(require 'utils)
+(require 'lacquer-utils)
 
 
 (defclass lacquer-automation-cls ()
@@ -75,6 +98,6 @@
       (oset this lacquer-cls-timer nil))))
 
 
-(provide 'automation)
+(provide 'lacquer-automation)
 
-;;; automation.el ends here
+;;; lacquer-automation.el ends here

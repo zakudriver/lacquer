@@ -86,9 +86,9 @@
 (require 'cl-lib)
 (require 'ivy)
 (require 'seq)
-(require 'utils)
-(require 'setting)
-(require 'automation)
+(require 'lacquer-utils)
+(require 'lacquer-setting)
+(require 'lacquer-automation)
 
 
 ;;;; Constants
@@ -100,7 +100,7 @@
 
 (defgroup lacquer nil
   "Settings for `lacquer'."
-  ;; :prefix "lacquer-"
+  :prefix "lacquer-"
   :group 'utils)
 
 
@@ -117,15 +117,15 @@ Optional: config.Any function."
   "Mode of switch theme automatically."
   :group 'lacquer
   :type '(choice
-          (const :tag "Orderly" :value orderly)
-          (const :tag "Random" :value random)))
+          (const :tag "Orderly" :value 'orderly)
+          (const :tag "Random" :value 'random)))
 
 
 (defcustom lacquer-auto-switch-time (lacquer-time-word-seconds 1 "hour")
   "When it's list,  switch themes at time of list item every day.
-When it's integer, switch themes for every THIS seconds"
+When it's integer, switch themes for every some seconds"
   :group 'lacquer
-  :type '(choice (integer :tag "Relativetime" :value 0)
+  :type '(choice (integer :tag "Relativetime" :value 3600)
                  (list :tag "Timelist" :value '("10:00" "15:00" "18:00"))))
 
 
@@ -136,10 +136,7 @@ When it's integer, switch themes for every THIS seconds"
 
 
 (defcustom lacquer-font-list '(Menlo Fira\ Code)
-  "Font list.
-E.g: '((theme-package-name theme-name config)).
-Required: theme-package-name theme-name.
-Optional: config.Any function."
+  "Font list."
   :type 'list)
 
 
@@ -154,7 +151,7 @@ Optional: config.Any function."
   :type 'integer)
 
 
-(defcustom lacquer-cache (concat user-emacs-directory ".lacquer")
+(defcustom lacquer-cache (concat user-emacs-directory ".lacquer.el")
   "Path of cache."
   :group 'lacquer
   :type 'string)
@@ -273,7 +270,6 @@ Optional: config.Any function."
                          :cache-path lacquer-cache
                          :theme-list lacquer-theme-list
                          :font-list lacquer-font-list
-                         :cache-str (lacquer-read-path lacquer-cache)
                          :setting (list (cons "theme" lacquer-default-theme)
                                         (cons "font" lacquer-default-font)
                                         (cons "font-size" lacquer-default-font-size)
@@ -342,13 +338,6 @@ CONFIG: theme config."
   "Make params of theme factory function by FONT and INDEX."
   (lacquer-interactive-factory font `(lacquer-font-factory-macro ,index ,font)))
 
-
-(defmacro lacquer-macro-factory (list func)
-  "Theme function macro factory by LIST and callback FUNC."
-  (let ((i -1))
-    `(progn ,@(mapcar #'(lambda (v)
-                          (cl-incf i)
-                          (funcall func v i)) (eval list)))))
 
 ;; Font-size
 
