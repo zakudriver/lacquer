@@ -1,4 +1,4 @@
-;;; lacquer.el --- Switch theme/font by selecting from a cache.  -*- lexical-binding: t; -*-
+;;; lacquer.el --- Switch theme/font by selecting from a cache  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2017 dingansich_kum0
 
@@ -72,12 +72,12 @@
 
 ;;; Commentary:
 
-;; Lacquer is a util that switches theme/font/font-size and to configure cache.
-;; Use both the seletor and the shortcut key to switch themes/font.
-;; Load previous theme/font/font-size after restarting the Emacs.
-;; Each theme can be configured individually.
-;; Download unused themes automatically with package.el.
-;; Generate interactive function automatically.
+;; - Use both the seletor and the shortcut key to switch themes/font.
+;; - Load previous theme/font/font-size after restarting the Emacs.
+;; - Each theme can be configured individually.
+;; - Download unused themes automatically with package.el.
+;; - Generate interactive function automatically.
+;; - Automatically change themes depending on a time schedule created by users.
 
 ;;; Code:
 
