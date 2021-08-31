@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017 dingansich_kum0
 
 ;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
-;; URL: https://example.com/package-name.el
+;; URL: https://github.com/dingansichKum0/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2") (ivy "0.13.4"))
 ;; Keywords: tools
