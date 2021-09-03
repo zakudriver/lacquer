@@ -57,10 +57,10 @@
                           :custom string
                           :documentation "Font list.")
    (lacquer-cls-setting :initarg :setting
-                        :initform '(("theme" nil)
-                                    ("font" nil)
-                                    ("font-size" 0)
-                                    ("mode" nil))
+                        :initform '(("theme" . nil)
+                                    ("font" . nil)
+                                    ("font-size" . 0)
+                                    ("mode" . nil))
                         :custom (set (cons :tag "Theme" (const "theme") symbol)
                                      (cons :tag "Font" (const "font") symbol)
                                      (cons :tag "Font-size" (const "font-size") integer)
@@ -69,8 +69,8 @@
                                                                        (const :tag "Random" 'random))))
                         :documentation "Currnet setting.(theme, font, font-size and mode).")
    (lacquer-cls-index :initarg :theme-index
-                      :initform '(("theme" 0)
-                                  ("font" 0))
+                      :initform '(("theme" . 0)
+                                  ("font" . 0))
                       :custom (set (cons :tag "Current index in the theme list." (const "theme") integer)
                                    (cons :tag "Current index in the font list." (const "font") integer))
                       :documentation "Current index in the theme and font list."))
