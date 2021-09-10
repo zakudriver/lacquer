@@ -36,7 +36,6 @@
 
 
 (require 'cl-lib)
-(require 'cl-seq)
 
 
 (defun lacquer-generate-keys-index-list (&optional prefix)
