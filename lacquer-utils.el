@@ -131,13 +131,13 @@ If now less than time return t."
     (time-less-p now time)))
 
 
-(defun lacquer-map-incf (map func list)
+(defun lacquer-mapc-incf (func list)
   "MAP to incf index.
-FUNC and LIST like `mapc' or `mapcar'."
+FUNC and LIST like `mapc'."
   (let ((index -1))
-    (funcall map #'(lambda (arg)
-                     (cl-incf index)
-                     (funcall func arg index)) list)))
+    (mapc (lambda (arg)
+            (cl-incf index)
+            (funcall func arg index)) list)))
 
 
 (provide 'lacquer-utils)

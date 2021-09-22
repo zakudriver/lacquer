@@ -249,7 +249,7 @@ When it's integer, switch themes for every some seconds"
   "Lacquer mode has started.")
 
 
-(defvar lacquer-theme-name-list (mapcar #'(lambda (i) (nth 1 i)) lacquer-theme-list)
+(defvar lacquer-theme-name-list (mapcar (lambda (i) (nth 1 i)) lacquer-theme-list)
   "Theme name list.")
 
 
@@ -287,7 +287,8 @@ When it's integer, switch themes for every some seconds"
 
 (defun lacquer-font-installed-filter ()
   "Filter font list if it's installed."
-  (seq-filter #'lacquer-font-installed-p lacquer-font-list))
+  (setq lacquer-font-list
+        (seq-filter #'lacquer-font-installed-p lacquer-font-list)))
 
 
 (defun lacquer-interactive-factory (name body)
@@ -316,8 +317,8 @@ CONFIG: theme config."
 
        (lacquer-cls-set lacquer-setting-instance "theme" (quote ,load-name))
        (lacquer-cls-set-index lacquer-setting-instance "theme" ,index)
-       (message (format "<%s> loaded successfully."
-                        (symbol-name (quote ,load-name)))))))
+       (message "<%s> loaded successfully."
+                (symbol-name (quote ,load-name))))))
 
 
 (defun lacquer-theme-factory (theme index)
@@ -402,7 +403,7 @@ CONFIG: theme config."
            (let ((theme (intern value)))
              (if (fboundp theme)
                  (funcall theme)
-               (message (format "<%s> is no existing." theme)))))))
+               (message "<%s> is no existing." theme))))))
 
 
 ;;;###autoload
@@ -418,7 +419,7 @@ CONFIG: theme config."
            (let ((font (intern value)))
              (if (fboundp font)
                  (funcall font)
-               (message (format "<%s> is no existing." font)))))))
+               (message "<%s> is no existing." font))))))
 
 
 ;;;###autoload
@@ -485,31 +486,30 @@ CONFIG: theme config."
            finally return map))
 
 
-(defvar lacquer-mode-map (make-sparse-keymap "lacquer map")
+(defvar lacquer-mode-map (let ((km (make-sparse-keymap "lacquer map")))
+                           (define-key km (kbd lacquer-current-theme-key) 'lacquer-current-theme)
+                           (define-key km (kbd lacquer-current-font-key) 'lacquer-current-font)
+                           (define-key km (kbd lacquer-theme-selector-key) 'lacquer-theme-selector)
+                           (define-key km (kbd lacquer-font-selector-key) 'lacquer-font-selector)
+                           (define-key km (kbd lacquer-font-increase-key) 'lacquer-font-size-increase)
+                           (define-key km (kbd lacquer-font-decrease-key) 'lacquer-font-size-decrease)
+                           (define-key km (kbd lacquer-theme-carousel-key) 'lacquer-theme-carousel)
+                           (define-key km (kbd lacquer-mode-selector-key) 'lacquer-mode-selector)
+                           (define-key km (kbd lacquer-start-auto-switch-key) 'lacquer-start-auto-switch)
+                           (define-key km (kbd lacquer-stop-auto-switch-key) 'lacquer-stop-auto-switch)
+                           km)
   "Lacquer keymap.")
-
-
-(define-key lacquer-mode-map (kbd lacquer-current-theme-key) 'lacquer-current-theme)
-(define-key lacquer-mode-map (kbd lacquer-current-font-key) 'lacquer-current-font)
-(define-key lacquer-mode-map (kbd lacquer-theme-selector-key) 'lacquer-theme-selector)
-(define-key lacquer-mode-map (kbd lacquer-font-selector-key) 'lacquer-font-selector)
-(define-key lacquer-mode-map (kbd lacquer-font-increase-key) 'lacquer-font-size-increase)
-(define-key lacquer-mode-map (kbd lacquer-font-decrease-key) 'lacquer-font-size-decrease)
-(define-key lacquer-mode-map (kbd lacquer-theme-carousel-key) 'lacquer-theme-carousel)
-(define-key lacquer-mode-map (kbd lacquer-mode-selector-key) 'lacquer-mode-selector)
-(define-key lacquer-mode-map (kbd lacquer-start-auto-switch-key) 'lacquer-start-auto-switch)
-(define-key lacquer-mode-map (kbd lacquer-stop-auto-switch-key) 'lacquer-stop-auto-switch)
 
 ;; Minor-mode
 
 (defun lacquer-start-up (&optional auto)
   "Start up.
 When AUTO is `no-nil' execute switch theme automatically."
-  (setq lacquer-font-list (lacquer-font-installed-filter))
+  (lacquer-font-installed-filter)
   (lacquer-new-setting)
 
-  (lacquer-map-incf #'mapc #'lacquer-theme-factory lacquer-theme-list)
-  (lacquer-map-incf #'mapc #'lacquer-font-factory lacquer-font-list)
+  (lacquer-mapc-incf #'lacquer-theme-factory lacquer-theme-list)
+  (lacquer-mapc-incf #'lacquer-font-factory lacquer-font-list)
   
   (lacquer-generate-map
    :map lacquer-mode-map
