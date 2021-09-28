@@ -28,7 +28,7 @@ also to define specifically when to switch themes automatically.
 [[./imgs/font-keys.png]]
  
 * Installation
-Download el file to your load-path.
+Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or download to your load-path.
 
 * Usage
 #+BEGIN_SRC lisp
