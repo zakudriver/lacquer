@@ -5,7 +5,7 @@
 ;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
 ;; URL: https://github.com/dingansichKum0/lacquer
 ;; Version: 1.0
-;; Package-Requires: ((emacs "25.2") (ivy "0.13.4"))
+;; Package-Requires: ((emacs "25.2"))
 ;; Keywords: tools
 
 ;; This file is not part of GNU Emacs.
@@ -32,7 +32,6 @@
 ;;; Install these required packages:
 
 ;; + cl-lib
-;; + ivy
 ;; + seq
 
 ;;; Usage
@@ -84,7 +83,6 @@
 ;;;; Requirements
 
 (require 'cl-lib)
-(require 'ivy)
 (require 'seq)
 (require 'lacquer-utils)
 (require 'lacquer-setting)
@@ -373,19 +371,22 @@ CONFIG: theme config."
 ;; Selector
 
 (cl-defun lacquer-make-selector (&key list current select-list prompt which func)
-  "Make selector by LIST of theme or font, CURRENT, SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
+  "Make selector by LIST of theme or font, CURRENT,
+SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
   (let* ((selected (cl-loop with i = 0
                             for v in list
                             if (eq (if (functionp which) (funcall which v) v) current)
-                            return i
+                            return (symbol-name (if (functionp which) (funcall which v) v))
                             else
                             do (cl-incf i)
                             finally return i))
-         (str (ivy-read prompt
-                        select-list
-                        :sort nil
-                        :require-match t
-                        :preselect selected)))
+         (str (completing-read prompt
+                               select-list
+                               nil
+                               t
+                               nil
+                               nil
+                               selected)))
     (if (functionp func)
         (funcall func str))))
 
