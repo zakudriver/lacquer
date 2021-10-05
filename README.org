@@ -1,4 +1,6 @@
-#+TITLE:Lacquer 
+#+TITLE:Lacquer
+
+[[https://melpa.org/#/lacquer][https://melpa.org/packages/lacquer-badge.svg]]
 
 Lacquer is a util that switches theme/font/font-size and to configure cache, and switch themes automatically ;)
 
@@ -59,6 +61,13 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
                            Inconsolata
                            Iosevka))
       (lacquer-default-font-size 130))
+#+END_SRC
+
+When emacs started in server mode: (Issues [[https://github.com/dingansichKum0/lacquer/issues/4][#4]])
+#+BEGIN_SRC lisp
+  (after-init . (lambda () (if (daemonp) 
+                 (add-hook 'server-after-make-frame-hook #'lacquer-auto-mode)
+               (lacquer-auto-mode))))
 #+END_SRC
 
 * Customization

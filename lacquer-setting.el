@@ -81,12 +81,12 @@
   "Check THIS's setting value by KEY and VALUE, and return right value."
   (lacquer-cls-get this key)
   (cond ((string= key "theme")
-         (let ((index (lacquer-list-include
+         (let ((index (lacquer-list-included-p
                        (oref this lacquer-cls-theme-list) value (lambda (v) (nth 1 v)))))
            (if index
                value (lacquer-cls-get this key))))
         ((string= key "font")
-         (if (and (lacquer-list-include (oref this lacquer-cls-font-list) value) (lacquer-font-installed-p value))
+         (if (and (lacquer-list-included-p (oref this lacquer-cls-font-list) value) (lacquer-font-installed-p value))
              value (lacquer-cls-get this key)))
         ((string= key "font-size")
          (if (integerp value) value (lacquer-cls-get this key)))

@@ -55,7 +55,7 @@ PREFIX is optional string."
     ""))
 
 
-(defun lacquer-list-include (list target &optional which)
+(defun lacquer-list-included-p (list target &optional which)
   "Whether TARGET is included in LIST, and return index or nil.
 WHICH is a `nth' function to LIST."
   (cl-loop with i = 0
