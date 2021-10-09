@@ -35,8 +35,6 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
 * Usage
 #+BEGIN_SRC lisp
   (use-package lacquer
-      :ensure nil
-      :load-path "~/.emacs.d/site-lisp/lacquer"
       :hook
       (after-init . lacquer-auto-mode)
       :custom
