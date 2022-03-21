@@ -149,7 +149,7 @@ When it's integer, switch themes for every some seconds"
   :type 'integer)
 
 
-(defcustom lacquer-cache (concat user-emacs-directory ".lacquer.el")
+(defcustom lacquer-cache (concat user-emacs-directory ".lacquer")
   "Path of cache."
   :group 'lacquer
   :type 'string)
