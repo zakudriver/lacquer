@@ -1,9 +1,9 @@
 ;;; lacquer-utils.el --- Extend for lacquer  -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017 dingansich_kum0
+;; Copyright (C) 2017 zakudriver
 
-;; Author: dingansich_kum0 <zy.hua1122@outlook.com>
-;; URL: https://github.com/dingansichKum0/lacquer
+;; Author: zakudriver <zy.hua1122@outlook.com>
+;; URL: https://github.com/zakudriver/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))
 ;; Keywords: tools

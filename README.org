@@ -61,7 +61,7 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
       (lacquer-default-font-size 130))
 #+END_SRC
 
-When emacs started in server mode: (Issues [[https://github.com/dingansichKum0/lacquer/issues/4][#4]])
+When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacquer/issues/4][#4]])
 #+BEGIN_SRC lisp
   (after-init . (lambda () (if (daemonp) 
                  (add-hook 'server-after-make-frame-hook #'lacquer-auto-mode)
