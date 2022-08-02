@@ -115,8 +115,8 @@ Optional: config.Any function."
   "Mode of switch theme automatically."
   :group 'lacquer
   :type '(choice
-          (const :tag "Orderly" 'orderly)
-          (const :tag "Random" 'random)))
+          (const :tag "Orderly" orderly)
+          (const :tag "Random" random)))
 
 
 (defcustom lacquer-auto-switch-time (lacquer-time-word-seconds 1 "hour")
