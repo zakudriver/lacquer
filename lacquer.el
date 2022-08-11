@@ -387,10 +387,7 @@ CONFIG: theme config."
 
 (defun lacquer-scan-theme-list ()
   "Scan theme list to istinguish between light and dark."
-  (print "to scan")
-  
   (unless (and lacquer-light-theme-name-list lacquer-dark-theme-name-list)
-    (print "scan")
     (cl-loop for (_ name tag) in lacquer-theme-list
              do (cond
                  ((eq 'light tag)
@@ -412,25 +409,8 @@ CONFIG: theme config."
                               (if (eq appearance 'light)
                                   lacquer-light-theme-name-list
                                 lacquer-dark-theme-name-list))
-  (lacquer-switch-next-theme))
-
-
-;;;###autoload
-(defun lacquer-start-appearance-switch ()
-  "Start appearance switch."
-  (interactive)
-  (when (boundp ns-system-appearance-change-functions)
-    (lacquer-scan-theme-list)
-    (add-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)))
-
-
-;;;###autoload
-(defun lacquer-stop-appearance-switch ()
-  "Stop appearance switch."
-  (interactive)
-  (when (boundp ns-system-appearance-change-functions)
-    (remove-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)
-    (lacquer-cls-set-theme-list lacquer-setting-instance lacquer-theme-name-list)))
+  (lacquer-switch-next-theme)
+  (message "%s appearance." (symbol-name appearance)))
 
 ;;;;; Public
 
@@ -553,6 +533,23 @@ SELECT-LIST and PROMPT, FUNC is callback of select."
   "Stop switch theme automatically."
   (interactive)
   (lacquer-cls-stop lacquer-automation-instance))
+
+
+;;;###autoload
+(defun lacquer-start-appearance-switch ()
+  "Start appearance switch."
+  (interactive)
+  (when (boundp 'ns-system-appearance-change-functions)
+    (lacquer-scan-theme-list)
+    (add-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)))
+
+;;;###autoload
+(defun lacquer-stop-appearance-switch ()
+  "Stop appearance switch."
+  (interactive)
+  (when (boundp 'ns-system-appearance-change-functions)
+    (lacquer-cls-set-theme-list lacquer-setting-instance lacquer-theme-name-list)
+    (remove-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)))
 
 ;;;;; Keymaps
 
