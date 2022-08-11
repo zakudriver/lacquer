@@ -49,13 +49,13 @@
 ;;     (after-init . lacquer-mode)
 ;;     :custom
 ;;     (lacquer-cache "~/.emacs.d/.lacquer.el")
-;;     (lacquer-theme-list '((monokai-theme monokai)
-;;                           (monokai-pro-theme monokai-pro)
-;;                           (dracula-theme dracula)
+;;     (lacquer-theme-list '((monokai-theme monokai dark)
+;;                           (monokai-pro-theme monokai-pro dark)
+;;                           (dracula-theme dracula dark)
 ;;                           (doom-themes doom-one-light)
 ;;                           (doom-themes doom-vibrant)
 ;;                           (doom-themes doom-nord)
-;;                           (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
+;;                           (leuven-theme leuven light (setq leuven-scale-outline-headlines nil))
 ;;                           (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))))
 ;;     (lacquer-font-list '(Menlo
 ;;                          Roboto\ Mono
@@ -77,6 +77,7 @@
 ;; - Download unused themes automatically with package.el.
 ;; - Generate interactive function automatically.
 ;; - Automatically change themes depending on a time schedule created by users.
+;; - Distinguish light and dark theme, and switch themes based on system appearance.
 
 ;;; Code:
 
@@ -104,19 +105,24 @@
 
 (defcustom lacquer-theme-list '((monokai-theme monokai))
   "Theme list.
-E.g: \='((theme-package-name theme-name light/dark config)).
+E.g: \='((theme-package-name theme-name tag config)).
 Required: theme-package-name theme-name.
 Optional: config, light/dark.
 
 The config is any function about theme setting.
-E.g: \='((leuven-theme leuven
+E.g: \='((leuven-theme leuven-dark
  (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+
 The `light'/`dark' tag is used to define the theme as light or dark series.
+E.g: \='((leuven-theme leuven light
+ (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
 When not set tag, how to distinguish between light and dark:
 It will depend on theme-name whether included \='light' or \='dark'.
 If theme-name does not includes \='light' or \='dark', it will be dark.
-Because most of the themes are dark series."
+Because most of the themes are dark series.
+
+If `lacquer-appearance-switch' is enabled, I recommend labeling all themes of tags."
   :group 'lacquer
   :type '(alist :value-type (group symbol symbol function)))
 

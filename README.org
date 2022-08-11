@@ -19,6 +19,7 @@ also to define specifically when to switch themes automatically.
 - Download unused themes automatically with package.el.
 - Generate interactive function automatically.
 - Automatically change themes depending on a time schedule created by users.
+- Distinguish light and dark, and switch themes based on system appearance.
 
 * Screencast
 [[./imgs/theme-selector.png]]
@@ -41,13 +42,14 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
       (lacquer-cache "~/.emacs.d/.lacquer.el")
       (lacquer-auto-switch-time '("10:00" "12:00" "15:00" "17:00")) ;; (lacquer-auto-switch-time 3600) ;; switch every hour.
       (lacquer-auto-switch-mode 'random)
-      (lacquer-theme-list '((monokai-theme monokai)
-                            (monokai-pro-theme monokai-pro)
-                            (dracula-theme dracula)
+      (lacquer-appearance-switch t)
+      (lacquer-theme-list '((monokai-theme monokai dark)
+                            (monokai-pro-theme monokai-pro dark)
+                            (dracula-theme dracula dark)
                             (doom-themes doom-one-light)
-                            (doom-themes doom-vibrant)
-                            (doom-themes doom-nord)
-                            (leuven-theme leuven (setq leuven-scale-outline-headlines nil))
+                            (doom-themes doom-vibrant dark)
+                            (doom-themes doom-nord dark)
+                            (leuven-theme leuven light (setq leuven-scale-outline-headlines nil))
                             (leuven-theme leuven-dark (setq leuven-scale-outline-headlines nil))))
       (lacquer-font-list '(Menlo
                            Roboto\ Mono
@@ -61,6 +63,33 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
       (lacquer-default-font-size 130))
 #+END_SRC
 
+* How to distinguish between light and dark theme
+#+BEGIN_SRC lisp
+  (defcustom lacquer-theme-list '((monokai-theme monokai))
+    "Theme list.
+  E.g: \='((theme-package-name theme-name tag config)).
+  Required: theme-package-name theme-name.
+  Optional: config, tag.
+
+  The config is any function about theme setting.
+  E.g: \='((leuven-theme leuven
+   (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+
+  The `light'/`dark' tag is used to define the theme as light or dark series.
+  E.g: \='((leuven-theme leuven light
+   (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+
+  When not set tag, how to distinguish between light and dark:
+  It will depend on theme-name whether included \='light' or \='dark'.
+  If theme-name does not includes \='light' or \='dark', it will be dark.
+  Because most of the themes are dark series.
+
+  If `lacquer-appearance-switch' is enabled, I recommend labeling all themes of tags."
+    :group 'lacquer
+    :type '(alist :value-type (group symbol symbol function)))
+#+END_SRC
+
+
 When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacquer/issues/4][#4]])
 #+BEGIN_SRC lisp
   (after-init . (lambda () (if (daemonp) 
@@ -71,7 +100,7 @@ When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacqu
 * Customization
 | Variable                      | Default                                        | type         | Description                                                                                                                 |
 |-------------------------------+------------------------------------------------+--------------+-----------------------------------------------------------------------------------------------------------------------------|
-| lacquer-theme-list            | '((monokai-theme monokai))                     | list         | Theme list. E.g: '((theme-package-name theme-name config)).                                                                 |
+| lacquer-theme-list            | '((monokai-theme monokai))                     | list         | Theme list. E.g: '((theme-package-name theme-name tag config)).                                                             |
 | lacquer-default-theme         | 'monokai                                       | list         | Default theme.                                                                                                              |
 | lacquer-cache                 | "~/.emacs.d/.lacquer"                          | string       | Path of lacquer cache.                                                                                                      |
 | lacquer-keys-map-index        | '("1" "2" "3" ... "a" "b" "c" ... "z 1" "z 2") | list         | Keys map.                                                                                                                   |
@@ -86,21 +115,22 @@ When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacqu
 | lacquer-auto-switch-time      | 3600(seconds)                                  | integer/list | When it's list,  switch themes at time of list item every day. And when it's integer, switch themes for every THIS seconds. |
 | lacquer-start-auto-switch-key | "C-c T A"                                      | string       | Start swtich theme automatically bind key.                                                                                  |
 | lacquer-stop-auto-switch-key  | "C-c T P"                                      | string       | Stop swtich theme automatically bind key.                                                                                   |
+| lacquer-appearance-switch     | nil                                            | boolean      | If it's `no-nil', switch theme by the system appearance is changed.                                                         |
+
 
 * Command
-| Command                    | Description                            |
-|----------------------------+----------------------------------------|
-| lacquer-current-theme      | Print current theme.                   |
-| lacquer-current-font       | Print current font.                    |
-| lacquer-theme-selector     | Open theme selector in the minibuffer. |
-| lacquer-font-selector      | Open font selector in the minibuffer.  |
-| lacquer-font-size-increase | Font size increase.                    |
-| lacquer-font-size-decrease | Font size decrease.                    |
-| lacquer-start-auto-switch  | Start swtich theme automatically.      |
-| lacquer-stop-auto-switch   | Stop switch theme automatically.       |
-| lacquer-mode-selector      | Open mode selector in the minibuffer.  |
-
-* TODOList
-- Distinguish between light and dark theme.
+| Command                         | Description                            |
+|---------------------------------+----------------------------------------|
+| lacquer-current-theme           | Print current theme.                   |
+| lacquer-current-font            | Print current font.                    |
+| lacquer-theme-selector          | Open theme selector in the minibuffer. |
+| lacquer-font-selector           | Open font selector in the minibuffer.  |
+| lacquer-font-size-increase      | Font size increase.                    |
+| lacquer-font-size-decrease      | Font size decrease.                    |
+| lacquer-start-auto-switch       | Start swtich theme automatically.      |
+| lacquer-stop-auto-switch        | Stop switch theme automatically.       |
+| lacquer-mode-selector           | Open mode selector in the minibuffer.  |
+| lacquer-start-appearance-switch | Start appearance switch.               |
+| lacquer-stop-appearance-switch  | Stop appearance switch.                |
 
 ** [[http://www.gnu.org/licenses/][License]]
