@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 zakudriver
 
-;; Author: zakudriver <zy.hua1122@outlook.com>
+;; Author: zakudriver <zy.hua1122@gmail.com>
 ;; URL: https://github.com/zakudriver/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))
@@ -53,19 +53,6 @@ PREFIX is optional string."
   (if (file-exists-p path)
       (with-temp-buffer (insert-file-contents path) (buffer-string))
     ""))
-
-
-(defun lacquer-list-included-p (list target &optional which)
-  "Whether TARGET is included in LIST, and return index or nil.
-WHICH is a `nth' function to LIST."
-  (cl-loop with i = 0
-           for v in list
-           if (eq (if (functionp which) (funcall which v) v)
-                  target)
-           return i
-           else
-           do (cl-incf i)
-           finally return nil))
 
 
 (defun lacquer-font-installed-p (name)

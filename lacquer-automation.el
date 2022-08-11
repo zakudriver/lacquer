@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 zakudriver
 
-;; Author: zakudriver <zy.hua1122@outlook.com>
+;; Author: zakudriver <zy.hua1122@gmail.com>
 ;; URL: https://github.com/zakudriver/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))

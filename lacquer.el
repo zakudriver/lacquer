@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 zakudriver
 
-;; Author: zakudriver <zy.hua1122@outlook.com>
+;; Author: zakudriver <zy.hua1122@gmail.com>
 ;; URL: https://github.com/zakudriver/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))
@@ -104,9 +104,19 @@
 
 (defcustom lacquer-theme-list '((monokai-theme monokai))
   "Theme list.
-E.g: '((theme-package-name theme-name config)).
+E.g: \='((theme-package-name theme-name light/dark config)).
 Required: theme-package-name theme-name.
-Optional: config.Any function."
+Optional: config, light/dark.
+
+The config is any function about theme setting.
+E.g: \='((leuven-theme leuven
+ (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+The `light'/`dark' tag is used to define the theme as light or dark series.
+
+When not set tag, how to distinguish between light and dark:
+It will depend on theme-name whether included \='light' or \='dark'.
+If theme-name does not includes \='light' or \='dark', it will be dark.
+Because most of the themes are dark series."
   :group 'lacquer
   :type '(alist :value-type (group symbol symbol function)))
 
@@ -117,6 +127,12 @@ Optional: config.Any function."
   :type '(choice
           (const :tag "Orderly" orderly)
           (const :tag "Random" random)))
+
+
+(defcustom lacquer-appearance-switch nil
+  "If it's `no-nil', switch theme by the system appearance is changed."
+  :group 'lacquer
+  :type 'boolean)
 
 
 (defcustom lacquer-auto-switch-time (lacquer-time-word-seconds 1 "hour")
@@ -214,7 +230,7 @@ When it's integer, switch themes for every some seconds"
 
 
 (defcustom lacquer-current-font-key "C-c F 0"
-  "Current theme bind key."
+  "Current font bind key."
   :group 'lacquer
   :type 'string)
 
@@ -259,6 +275,14 @@ When it's integer, switch themes for every some seconds"
 (defvar lacquer-automation-instance nil
   "Automation instance.")
 
+
+(defvar lacquer-light-theme-name-list nil
+  "List of light theme name.")
+
+
+(defvar lacquer-dark-theme-name-list nil
+  "List of dark theme name.")
+
 ;;;;; Private
 
 (defun lacquer-new-setting ()
@@ -267,7 +291,7 @@ When it's integer, switch themes for every some seconds"
     (setq lacquer-setting-instance
           (make-instance 'lacquer-setting-cls
                          :cache-path lacquer-cache
-                         :theme-list lacquer-theme-list
+                         :theme-list lacquer-theme-name-list
                          :font-list lacquer-font-list
                          :setting (list (cons "theme" lacquer-default-theme)
                                         (cons "font" lacquer-default-font)
@@ -300,12 +324,15 @@ When it's integer, switch themes for every some seconds"
 
 ;; Theme
 
-(defmacro lacquer-theme-factory-macro (index name load-name &rest config)
+(defmacro lacquer-theme-factory-macro (name load-name &rest config)
   "Theme factory macro.
-INDEX: index in lacquer-theme-list
 NAME: theme package name.
 LOAD-NAME: theme name.
 CONFIG: theme config."
+  (let ((tag (car config)))
+    (if (or (eq tag 'light) (eq tag 'dark))
+        (pop config)))
+  
   `(progn
      (unless (package-installed-p (quote ,name))
        (package-install (quote ,name)))
@@ -315,29 +342,26 @@ CONFIG: theme config."
        ,@config
 
        (lacquer-cls-set lacquer-setting-instance "theme" (quote ,load-name))
-       (lacquer-cls-set-index lacquer-setting-instance "theme" ,index)
        (message "<%s> loaded successfully."
                 (symbol-name (quote ,load-name))))))
 
 
-(defun lacquer-theme-factory (theme index)
+(defun lacquer-theme-factory (theme)
   "Make params of theme factory function by THEME and INDEX."
-  (lacquer-interactive-factory (nth 1 theme) `(lacquer-theme-factory-macro ,index ,@theme)))
+  (lacquer-interactive-factory (nth 1 theme) `(lacquer-theme-factory-macro ,@theme)))
 
 ;; Font
 
-(defmacro lacquer-font-factory-macro (index font)
+(defmacro lacquer-font-factory-macro (font)
   "Font factory macro by FONT and INDEX."
   `(progn
      (set-face-attribute 'default nil :font (symbol-name (quote ,font)))
-     (lacquer-cls-set-index lacquer-setting-instance "font" ,index)
      (lacquer-cls-set lacquer-setting-instance "font" (quote ,font))))
 
 
-(defun lacquer-font-factory (font index)
+(defun lacquer-font-factory (font)
   "Make params of theme factory function by FONT and INDEX."
-  (lacquer-interactive-factory font `(lacquer-font-factory-macro ,index ,font)))
-
+  (lacquer-interactive-factory font `(lacquer-font-factory-macro ,font)))
 
 ;; Font-size
 
@@ -351,7 +375,56 @@ CONFIG: theme config."
 
 (defun lacquer-switch-next-theme ()
   "Switch next theme from lacquer-auto-switch-mode."
-  (funcall (lacquer-cls-get-next lacquer-setting-instance "theme")))
+  (funcall (lacquer-cls-get-next-theme lacquer-setting-instance)))
+
+;; Light and Dark
+
+(defun lacquer-scan-theme-list ()
+  "Scan theme list to istinguish between light and dark."
+  (print "to scan")
+  
+  (unless (and lacquer-light-theme-name-list lacquer-dark-theme-name-list)
+    (print "scan")
+    (cl-loop for (_ name tag) in lacquer-theme-list
+             do (cond
+                 ((eq 'light tag)
+                  (push name lacquer-light-theme-name-list))
+                 ((eq 'dark tag)
+                  (push name lacquer-dark-theme-name-list))
+                 
+                 ((string-match-p "light" (symbol-name name))
+                  (push name lacquer-light-theme-name-list))
+                 ((string-match-p "dark" (symbol-name name))
+                  (push name lacquer-dark-theme-name-list))
+                 (t
+                  (push name lacquer-dark-theme-name-list))))))
+
+
+(defun lacquer-apply-appearance (appearance)
+  "Apply current system APPEARANCE into consideration."
+  (lacquer-cls-set-theme-list lacquer-setting-instance
+                              (if (eq appearance 'light)
+                                  lacquer-light-theme-name-list
+                                lacquer-dark-theme-name-list))
+  (lacquer-switch-next-theme))
+
+
+;;;###autoload
+(defun lacquer-start-appearance-switch ()
+  "Start appearance switch."
+  (interactive)
+  (when (boundp ns-system-appearance-change-functions)
+    (lacquer-scan-theme-list)
+    (add-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)))
+
+
+;;;###autoload
+(defun lacquer-stop-appearance-switch ()
+  "Stop appearance switch."
+  (interactive)
+  (when (boundp ns-system-appearance-change-functions)
+    (remove-hook 'ns-system-appearance-change-functions #'lacquer-apply-appearance)
+    (lacquer-cls-set-theme-list lacquer-setting-instance lacquer-theme-name-list)))
 
 ;;;;; Public
 
@@ -370,13 +443,13 @@ CONFIG: theme config."
 
 ;; Selector
 
-(cl-defun lacquer-make-selector (&key list current select-list prompt which func)
-  "Make selector by LIST of theme or font, CURRENT,
-SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
+(cl-defun lacquer-make-selector (&key list current select-list prompt func)
+  "Make selector by LIST of theme or font, CURRENT.
+SELECT-LIST and PROMPT, FUNC is callback of select."
   (let* ((selected (cl-loop with i = 0
                             for v in list
-                            if (eq (if (functionp which) (funcall which v) v) current)
-                            return (symbol-name (if (functionp which) (funcall which v) v))
+                            if (eq v current)
+                            return (symbol-name v)
                             else
                             do (cl-incf i)
                             finally return i))
@@ -396,11 +469,10 @@ SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
   "Open theme selector in the minibuffer."
   (interactive)
   (lacquer-make-selector
-   :list lacquer-theme-list
+   :list lacquer-theme-name-list
    :current (lacquer-cls-get lacquer-setting-instance "theme")
    :select-list lacquer-theme-name-list
    :prompt (format "Current theme is <%s>. Please choose: " (symbol-name (lacquer-cls-get lacquer-setting-instance "theme")))
-   :which (lambda (v) (nth 1 v))
    :func (lambda (value)
            (let ((theme (intern value)))
              (if (fboundp theme)
@@ -478,12 +550,12 @@ SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
 
 ;;;;; Keymaps
 
-(cl-defun lacquer-generate-map (&key map list prefix-key which)
-  "Generate key map by key MAP, LIST, PREFIX-KEY or WHICH func."
+(cl-defun lacquer-generate-map (&key map list prefix-key)
+  "Generate key map by key MAP, LIST, PREFIX-KEY."
   (cl-loop with i = 0
            for v in list
            do (progn
-                (define-key map (kbd (concat prefix-key " " (nth i lacquer-keys-map-index))) (if (functionp which) (funcall which v) v))
+                (define-key map (kbd (concat prefix-key " " (nth i lacquer-keys-map-index))) v)
                 (cl-incf i))
            finally return map))
 
@@ -504,28 +576,28 @@ SELECT-LIST and PROMPT or WHICH function, FUNC is callback of select."
 
 ;; Minor-mode
 
-(defun lacquer-start-up (&optional auto)
-  "Start up.
-When AUTO is `no-nil' execute switch theme automatically."
+(defun lacquer-start-up ()
+  "Start up."
   (lacquer-font-installed-filter)
   (lacquer-new-setting)
 
-  (lacquer-mapc-incf #'lacquer-theme-factory lacquer-theme-list)
-  (lacquer-mapc-incf #'lacquer-font-factory lacquer-font-list)
+  (mapc #'lacquer-theme-factory lacquer-theme-list)
+  (mapc #'lacquer-font-factory lacquer-font-list)
   
   (lacquer-generate-map
    :map lacquer-mode-map
-   :list lacquer-theme-list
-   :prefix-key lacquer-theme-prefix-key
-   :which (lambda (v) (nth 1 v)))
+   :list lacquer-theme-name-list
+   :prefix-key lacquer-theme-prefix-key)
   (lacquer-generate-map
    :map lacquer-mode-map
    :list lacquer-font-list
    :prefix-key lacquer-font-prefix-key)
   
   (lacquer-cls-call lacquer-setting-instance)
-  (if auto
-      (lacquer-start-auto-switch))
+
+  (if lacquer-appearance-switch
+      (lacquer-start-appearance-switch))
+  
   (setq lacquer-started t))
 
 
@@ -550,7 +622,10 @@ When AUTO is `no-nil' execute switch theme automatically."
   :global t
   :lighter nil
   (unless lacquer-started
-    (lacquer-start-up t)))
+    (lacquer-start-up))
+  (if lacquer-auto-mode
+      (lacquer-start-auto-switch)
+    (lacquer-stop-auto-switch)))
 
 
 (provide 'lacquer)

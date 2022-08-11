@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 zakudriver
 
-;; Author: zakudriver <zy.hua1122@outlook.com>
+;; Author: zakudriver <zy.hua1122@gmail.com>
 ;; URL: https://github.com/zakudriver/lacquer
 ;; Version: 1.0
 ;; Package-Requires: ((emacs "25.2"))
@@ -65,15 +65,9 @@
                                      (cons :tag "Font" (const "font") symbol)
                                      (cons :tag "Font-size" (const "font-size") integer)
                                      (cons :tag "Mode" (const "mode") (choice
-                                                                       (const :tag "Orderly" 'orderly)
-                                                                       (const :tag "Random" 'random))))
-                        :documentation "Currnet setting.(theme, font, font-size and mode).")
-   (lacquer-cls-index :initarg :theme-index
-                      :initform '(("theme" . 0)
-                                  ("font" . 0))
-                      :custom (set (cons :tag "Current index in the theme list." (const "theme") integer)
-                                   (cons :tag "Current index in the font list." (const "font") integer))
-                      :documentation "Current index in the theme and font list."))
+                                                                       (const :tag "Orderly" orderly)
+                                                                       (const :tag "Random" random))))
+                        :documentation "Currnet setting.(theme, font, font-size and mode)."))
   "Lacquer setting self.")
 
 
@@ -81,13 +75,14 @@
   "Check THIS's setting value by KEY and VALUE, and return right value."
   (lacquer-cls-get this key)
   (cond ((string= key "theme")
-         (let ((index (lacquer-list-included-p
-                       (oref this lacquer-cls-theme-list) value (lambda (v) (nth 1 v)))))
-           (if index
-               value (lacquer-cls-get this key))))
+         (if (cl-position value (oref this lacquer-cls-theme-list) :test 'equal)
+             value
+           (lacquer-cls-get this key)))
         ((string= key "font")
-         (if (and (lacquer-list-included-p (oref this lacquer-cls-font-list) value) (lacquer-font-installed-p value))
-             value (lacquer-cls-get this key)))
+         (if (and (cl-position value (oref this lacquer-cls-font-list) :test 'equal)
+                  (lacquer-font-installed-p value))
+             value
+           (lacquer-cls-get this key)))
         ((string= key "font-size")
          (if (integerp value) value (lacquer-cls-get this key)))
         ((string= key "mode")
@@ -121,6 +116,11 @@
                      (funcall v)))))
 
 
+(cl-defmethod lacquer-cls-set-theme-list ((this lacquer-setting-cls) list)
+  "Set THIS' theme LIST."
+  (setf (oref this lacquer-cls-theme-list) list))
+
+
 (cl-defmethod lacquer-cls-get ((this lacquer-setting-cls) key)
   "Get current setting(theme, font and font-size) from THIS by KEY.
 Return symbol of theme or font, int of font-size."
@@ -142,11 +142,6 @@ Return symbol of theme or font, int of font-size."
     (prin1 (oref this lacquer-cls-setting) (current-buffer))))
 
 
-(cl-defmethod lacquer-cls-get-index ((this lacquer-setting-cls) key)
-  "Get THIS's index from KEY."
-  (cdr (assoc key (oref this lacquer-cls-index))))
-
-
 (cl-defmethod lacquer-cls-get-list ((this lacquer-setting-cls) key)
   "Get THIS's theme or font list from KEY."
   (cond ((string= key "theme")
@@ -157,33 +152,27 @@ Return symbol of theme or font, int of font-size."
          nil)))
 
 
-(cl-defmethod lacquer-cls-next-index ((this lacquer-setting-cls) key)
-  "Get THIS's next index from KEY."
-  (let ((next (+ (lacquer-cls-get-index this key) 1)))
-    (if (= next (length (lacquer-cls-get-list this key)))
-        0
-      next)))
-
-
-(cl-defmethod lacquer-cls-set-index ((this lacquer-setting-cls) key value)
-  "Set THIS's index by KEY and VALUE."
-  (setf (cdr
-         (assoc key (oref this lacquer-cls-index))) value))
-
-
-(cl-defmethod lacquer-cls-get-next ((this lacquer-setting-cls) key)
-  "Get THIS's next KEY of theme or font.
-MODE is lacquer-auto-switch-mode."
+(cl-defmethod lacquer-cls-get-next-theme ((this lacquer-setting-cls))
+  "Get THIS's next theme .
+MODE is `lacquer-auto-switch-mode."
   (let ((i 0)
         (mode (lacquer-cls-get this "mode"))
-        (list (lacquer-cls-get-list this key)))
+        (list (lacquer-cls-get-list this "theme"))
+        (current-theme (lacquer-cls-get this "theme")))
     (cond ((eq mode 'orderly)
-           (setq i (lacquer-cls-next-index this key)))
+           (setq i (+ (cl-position current-theme list :test 'equal) 1))
+           (if (= i (length list))
+               (setq i 0)))
           ((eq mode 'random)
-           (setq i (random (length list))))
+           (setq i (random (length list)))
+           (let ((counts 0))
+             (while (and (eq (nth i list) current-theme) (< counts 10))
+               (cl-incf counts)
+               (setq i (random (length list))))))
           (t
            (setq i 0)))
-    (nth 1 (nth i list))))
+    
+    (nth i list)))
 
 
 (provide 'lacquer-setting)
