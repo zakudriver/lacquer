@@ -118,7 +118,7 @@ dark series, or the both series.
 E.g: \='((leuven-theme leuven light
  (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
-When not set tag, how to distinguish between light and dark:
+When not set tag, how to distinguish light and dark:
 It will depend on theme-name whether included \='light' or \='dark'.
 If theme-name does not includes \='light' or \='dark', it will be `both'.
 

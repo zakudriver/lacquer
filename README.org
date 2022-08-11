@@ -63,7 +63,7 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
       (lacquer-default-font-size 130))
 #+END_SRC
 
-* How to distinguish between light and dark theme
+* How to distinguish light and dark theme
 #+BEGIN_SRC lisp
   (defcustom lacquer-theme-list '((monokai-theme monokai))
   "Theme list.
@@ -80,7 +80,7 @@ dark series, or the both series.
 E.g: \='((leuven-theme leuven light
  (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
-When not set tag, how to distinguish between light and dark:
+When not set tag, how to distinguish light and dark:
 It will depend on theme-name whether included \='light' or \='dark'.
 If theme-name does not includes \='light' or \='dark', it will be `both'.
 
