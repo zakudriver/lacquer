@@ -49,7 +49,7 @@
 ;;     (after-init . lacquer-mode)
 ;;     :custom
 ;;     (lacquer-cache "~/.emacs.d/.lacquer.el")
-;;     (lacquer-theme-list '((monokai-theme monokai dark)
+;;     (lacquer-theme-list '((monokai-theme monokai both)
 ;;                           (monokai-pro-theme monokai-pro dark)
 ;;                           (dracula-theme dracula dark)
 ;;                           (doom-themes doom-one-light)
@@ -113,18 +113,19 @@ The config is any function about theme setting.
 E.g: \='((leuven-theme leuven-dark
  (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
-The `light'/`dark' tag is used to define the theme as light or dark series.
+The `light'/`dark'/`both' tag is used to define the theme as light or
+dark series, or the both series.
 E.g: \='((leuven-theme leuven light
  (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
 When not set tag, how to distinguish between light and dark:
 It will depend on theme-name whether included \='light' or \='dark'.
-If theme-name does not includes \='light' or \='dark', it will be dark.
-Because most of the themes are dark series.
+If theme-name does not includes \='light' or \='dark', it will be `both'.
 
-If `lacquer-appearance-switch' is enabled, I recommend labeling all themes of tags."
+If `lacquer-appearance-switch' is enabled,
+I recommend labeling all themes of tags."
   :group 'lacquer
-  :type '(alist :value-type (group symbol symbol function)))
+  :type '(alist :value-type (group symbol symbol symbol function)))
 
 
 (defcustom lacquer-auto-switch-mode (car lacquer-mode-list)
@@ -336,7 +337,7 @@ NAME: theme package name.
 LOAD-NAME: theme name.
 CONFIG: theme config."
   (let ((tag (car config)))
-    (if (or (eq tag 'light) (eq tag 'dark))
+    (if (and tag (symbolp tag))
         (pop config)))
   
   `(progn
@@ -394,12 +395,16 @@ CONFIG: theme config."
                   (push name lacquer-light-theme-name-list))
                  ((eq 'dark tag)
                   (push name lacquer-dark-theme-name-list))
+                 ((eq 'both tag)
+                  (push name lacquer-light-theme-name-list)
+                  (push name lacquer-dark-theme-name-list))
                  
                  ((string-match-p "light" (symbol-name name))
                   (push name lacquer-light-theme-name-list))
                  ((string-match-p "dark" (symbol-name name))
                   (push name lacquer-dark-theme-name-list))
                  (t
+                  (push name lacquer-light-theme-name-list)
                   (push name lacquer-dark-theme-name-list))))))
 
 
