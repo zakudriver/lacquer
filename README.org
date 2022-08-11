@@ -13,7 +13,7 @@ It has so many new features, such as, allows users to switch themes and fonts in
 also to define specifically when to switch themes automatically.
 
 * Features
-- Use both the seletor and the shortcut key to switch themes/font.
+- Use both the selector and the shortcut key to switch themes/font.
 - Load previous theme/font/font-size after restarting the emacs.
 - Each theme can be configured individually.
 - Download unused themes automatically with package.el.
@@ -114,8 +114,8 @@ When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacqu
 | lacquer-font-size-step        | 5                                              | integer      | Change font size of step.                                                                                                   |
 | lacquer-auto-switch-mode      | 'orderly                                       | symbol       | Mode of switch theme automatically. Currently supports 'orderly and 'random.                                                |
 | lacquer-auto-switch-time      | 3600(seconds)                                  | integer/list | When it's list,  switch themes at time of list item every day. And when it's integer, switch themes for every THIS seconds. |
-| lacquer-start-auto-switch-key | "C-c T A"                                      | string       | Start swtich theme automatically bind key.                                                                                  |
-| lacquer-stop-auto-switch-key  | "C-c T P"                                      | string       | Stop swtich theme automatically bind key.                                                                                   |
+| lacquer-start-auto-switch-key | "C-c T A"                                      | string       | Start switch theme automatically bind key.                                                                                  |
+| lacquer-stop-auto-switch-key  | "C-c T P"                                      | string       | Stop switch theme automatically bind key.                                                                                   |
 | lacquer-appearance-switch     | nil                                            | boolean      | If it's `no-nil', switch theme by the system appearance is changed.                                                         |
 
 
@@ -128,7 +128,7 @@ When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacqu
 | lacquer-font-selector           | Open font selector in the minibuffer.  |
 | lacquer-font-size-increase      | Font size increase.                    |
 | lacquer-font-size-decrease      | Font size decrease.                    |
-| lacquer-start-auto-switch       | Start swtich theme automatically.      |
+| lacquer-start-auto-switch       | Start switch theme automatically.      |
 | lacquer-stop-auto-switch        | Stop switch theme automatically.       |
 | lacquer-mode-selector           | Open mode selector in the minibuffer.  |
 | lacquer-start-appearance-switch | Start appearance switch.               |
