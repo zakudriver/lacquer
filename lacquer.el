@@ -71,7 +71,7 @@
 
 ;;; Commentary:
 
-;; - Use both the seletor and the shortcut key to switch themes/font.
+;; - Use both the selector and the shortcut key to switch themes/font.
 ;; - Load previous theme/font/font-size after restarting the Emacs.
 ;; - Each theme can be configured individually.
 ;; - Download unused themes automatically with package.el.
@@ -249,13 +249,13 @@ When it's integer, switch themes for every some seconds"
 
 
 (defcustom lacquer-start-auto-switch-key "C-c T A"
-  "Start swtich theme automatically bind key."
+  "Start switch theme automatically bind key."
   :group 'lacquer
   :type 'string)
 
 
 (defcustom lacquer-stop-auto-switch-key "C-c T P"
-  "Stop swtich theme automatically bind key."
+  "Stop switch theme automatically bind key."
   :group 'lacquer
   :type 'string)
 
@@ -387,7 +387,7 @@ CONFIG: theme config."
 ;; Light and Dark
 
 (defun lacquer-scan-theme-list ()
-  "Scan theme list to istinguish between light and dark."
+  "Scan theme list to distinguish between light and dark."
   (unless (and lacquer-light-theme-name-list lacquer-dark-theme-name-list)
     (cl-loop for (_ name tag) in lacquer-theme-list
              do (cond
@@ -527,7 +527,7 @@ SELECT-LIST and PROMPT, FUNC is callback of select."
 
 ;;;###autoload
 (defun lacquer-start-auto-switch ()
-  "Start swtich theme automatically."
+  "Start switch theme automatically."
   (interactive)
   (lacquer-new-automation)
   (lacquer-cls-run lacquer-automation-instance #'lacquer-switch-next-theme))
