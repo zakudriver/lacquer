@@ -111,7 +111,7 @@ Callback FUNC is handle to time list."
 
 (defun lacquer-time-add (hhmm seconds)
   "HHMM + SECONDS.
-TIME is 'hh:mm' or hhmm.
+TIME is `hh:mm' or hhmm.
 Return timer."
   (time-add (lacquer-hhmm-to-time hhmm)
             seconds))

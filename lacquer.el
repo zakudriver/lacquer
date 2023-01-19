@@ -417,20 +417,28 @@ CONFIG: theme config."
   (lacquer-switch-next-theme)
   (message "%s appearance." (symbol-name appearance)))
 
+
+(defun lacquer-current-theme-name ()
+  "Get current theme name."
+  (symbol-name (lacquer-cls-get lacquer-setting-instance "theme")))
+
+
+(defun lacquer-current-font-name ()
+  "Get current font name."
+  (symbol-name (lacquer-cls-get lacquer-setting-instance "font")))
+
 ;;;;; Public
 
-;;;###autoload
 (defun lacquer-current-theme ()
   "Current theme."
   (interactive)
-  (message "Current theme: <%s>." (symbol-name (lacquer-cls-get lacquer-setting-instance "theme"))))
+  (message "Current theme: <%s>." (lacquer-current-theme-name)))
 
 
-;;;###autoload
 (defun lacquer-current-font ()
   "Current font."
   (interactive)
-  (message "Current font: <%s>." (symbol-name (lacquer-cls-get lacquer-setting-instance "font"))))
+  (message "Current font: <%s>." (lacquer-current-font-name)))
 
 ;; Selector
 
