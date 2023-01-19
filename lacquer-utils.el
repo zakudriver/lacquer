@@ -38,14 +38,21 @@
 (require 'cl-lib)
 
 
+(defun lacquer-generate-a-z ()
+  "Generate string list a-z."
+  (mapcar #'char-to-string (number-sequence ?a ?z)))
+
+
 (defun lacquer-generate-keys-index-list (&optional prefix)
   "Generate keys index.
 PREFIX is optional string."
-  (let ((func 'number-to-string))
+  (let ((func (lambda (i)
+                (if (numberp i) (number-to-string i) i)))
+        (suffixs (append (number-sequence 1 9) (lacquer-generate-a-z))))
     (if (stringp prefix)
-        (setq func (lambda (i)
-                     (concat prefix (number-to-string i)))))
-    (mapcar func (number-sequence 1 9))))
+        (mapcar (lambda (i)
+                  (concat prefix (funcall func i))) suffixs)
+      (mapcar func suffixs))))
 
 
 (defun lacquer-read-path (path)

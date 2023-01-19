@@ -192,7 +192,7 @@ When it's integer, switch themes for every some seconds"
 
 (defcustom lacquer-keys-map-index
   (append (lacquer-generate-keys-index-list)
-          '("a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z")
+          (lacquer-generate-keys-index-list "X")
           (lacquer-generate-keys-index-list "Y")
           (lacquer-generate-keys-index-list "Z"))
   "Keys map index."
