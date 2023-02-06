@@ -35,14 +35,24 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
 
 * Usage
 #+BEGIN_SRC lisp
+  ;; which-key
+  (use-package which-key
+    :hook
+    (after-init . which-key-mode)
+    :custom
+    (which-key-popup-type 'minibuffer)
+    (which-key-sort-order 'which-key-prefix-then-key-order))
+
+  ;; lacquer
   (use-package lacquer
       :hook
       (after-init . lacquer-auto-mode)
       :custom
       (lacquer-cache "~/.emacs.d/.lacquer.el")
-      (lacquer-auto-switch-time '("10:00" "12:00" "15:00" "17:00")) ;; (lacquer-auto-switch-time 3600) ;; switch every hour.
+      ;; (lacquer-auto-switch-time '("00:01" "00:02" "10:00" "14:00" "16:00" "18:00" "20:00" "22:00")) ;; Switch theme at these times.
+      (lacquer-auto-switch-time (* 60 30)) ;; Switch theme every half hour.
       (lacquer-auto-switch-mode 'random)
-      (lacquer-appearance-switch t)
+      (lacquer-appearance-switch t)        ;; Switch theme once the system appearance is changed, and distinguish light and dark theme.
       (lacquer-theme-list '((monokai-theme monokai both)
                             (monokai-pro-theme monokai-pro dark)
                             (dracula-theme dracula dark)
@@ -64,34 +74,43 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
 #+END_SRC
 
 * How to distinguish light and dark theme
+
+#+BEGIN_QUOTE
+If `lacquer-appearance-switch' is enabled, switch theme once the system appearance is changed, and distinguish light and dark theme. It also works in `lacquer-auto-switch-mode`.
+#+END_QUOTE
+
+
 #+BEGIN_SRC lisp
   (defcustom lacquer-theme-list '((monokai-theme monokai))
-  "Theme list.
-E.g: \='((theme-package-name theme-name tag config)).
-Required: theme-package-name theme-name.
-Optional: config, light/dark.
+    "Theme list.
+  E.g: \='((theme-package-name theme-name tag config)).
+  Required: theme-package-name theme-name.
+  Optional: tag(such as `light'/`dark'/`both'), config.
 
-The config is any function about theme setting.
-E.g: \='((leuven-theme leuven-dark
- (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+  The config is any function about theme setting.
+  E.g: \='((leuven-theme leuven-dark
+           (setq leuven-scale-outline-headlines nil)
+           (message \"i may be a configuration.\"))).
 
-The `light'/`dark'/`both' tag is used to define the theme as light or
-dark series, or the both series.
-E.g: \='((leuven-theme leuven light
- (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
 
-When not set tag, how to distinguish light and dark:
-It will depend on theme-name whether included \='light' or \='dark'.
-If theme-name does not includes \='light' or \='dark', it will be `both'.
+  If `lacquer-appearance-switch' is enabled,
+  the `light'/`dark'/`both' tag is used to define the theme as light or
+  dark series, or the both series.
+  E.g: \='((leuven-theme leuven light
+           (setq leuven-scale-outline-headlines nil)
+           (message \"i may be a configuration.\"))).
 
-If `lacquer-appearance-switch' is enabled,
-I recommend labeling all themes of tags."
-  :group 'lacquer
-  :type '(alist :value-type (group symbol symbol symbol function)))
+  When not set tag, how to distinguish light and dark:
+  It will depend on theme-name whether included \='light' or \='dark'.
+  If theme-name does not includes \='light' or \='dark', it will be \='both'.
+
+  I recommend labeling all themes of tags."
+    :group 'lacquer
+    :type '(alist :value-type (group symbol symbol symbol function)))
 #+END_SRC
 
 
-When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacquer/issues/4][#4]])
+* When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacquer/issues/4][#4]])
 #+BEGIN_SRC lisp
   (after-init . (lambda () (if (daemonp) 
                  (add-hook 'server-after-make-frame-hook #'lacquer-auto-mode)

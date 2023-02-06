@@ -107,22 +107,25 @@
   "Theme list.
 E.g: \='((theme-package-name theme-name tag config)).
 Required: theme-package-name theme-name.
-Optional: config, light/dark.
+Optional: tag(such as `light'/`dark'/`both'), config.
 
 The config is any function about theme setting.
 E.g: \='((leuven-theme leuven-dark
- (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+         (setq leuven-scale-outline-headlines nil)
+         (message \"i may be a configuration.\"))).
 
-The `light'/`dark'/`both' tag is used to define the theme as light or
+
+If `lacquer-appearance-switch' is enabled,
+the `light'/`dark'/`both' tag is used to define the theme as light or
 dark series, or the both series.
 E.g: \='((leuven-theme leuven light
- (setq leuven-scale-outline-headlines nil) (message \"hello\"))).
+         (setq leuven-scale-outline-headlines nil)
+         (message \"i may be a configuration.\"))).
 
 When not set tag, how to distinguish light and dark:
 It will depend on theme-name whether included \='light' or \='dark'.
-If theme-name does not includes \='light' or \='dark', it will be `both'.
+If theme-name does not includes \='light' or \='dark', it will be \='both'.
 
-If `lacquer-appearance-switch' is enabled,
 I recommend labeling all themes of tags."
   :group 'lacquer
   :type '(alist :value-type (group symbol symbol symbol function)))
