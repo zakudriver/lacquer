@@ -2,10 +2,10 @@
 
 [[https://melpa.org/#/lacquer][https://melpa.org/packages/lacquer-badge.svg]]
 
-Lacquer is a util that switches theme/font/font-size and to configure cache, and switch themes automatically ;)
+Lacquer is a util that switches theme/font/font-size and to configure cache, and switch themes automatically. 😋
 
 #+BEGIN_QUOTE
-ps: using it with `which-key' is recommended.
+ps: using it with =which-key= is recommended.
 #+END_QUOTE
 
 Lacquer is more than a combination of [[https://github.com/guidoschmidt/circadian.el][circadian]] and [[https://github.com/toroidal-code/cycle-themes.el][cycle-themes]].
@@ -75,8 +75,8 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
 
 * How to distinguish light and dark theme
 
-If `lacquer-appearance-switch' is enabled, switch theme once the system appearance is changed, and distinguish light and dark theme.
-It also works in `lacquer-auto-switch-mode`.
+If =lacquer-appearance-switch= is enabled, switch theme once the system appearance is changed, and distinguish light and dark theme.
+It also works in =lacquer-auto-switch-mode=.
 
 #+BEGIN_SRC lisp
       (defcustom lacquer-theme-list '((monokai-theme monokai))
@@ -109,7 +109,6 @@ It also works in `lacquer-auto-switch-mode`.
         :group 'lacquer
         :type '(alist :value-type (group symbol symbol symbol function)))
 #+END_SRC
-
 
 * When emacs started in server mode: (Issues [[https://github.com/zakudriver/lacquer/issues/4][#4]])
 #+BEGIN_SRC lisp
