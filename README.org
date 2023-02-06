@@ -75,10 +75,8 @@ Lacquer is available thorough [[https://melpa.org/#/][MELPA]] repository or down
 
 * How to distinguish light and dark theme
 
-#+BEGIN_QUOTE
-If `lacquer-appearance-switch' is enabled, switch theme once the system appearance is changed, and distinguish light and dark theme. It also works in `lacquer-auto-switch-mode`.
-#+END_QUOTE
-
+If `lacquer-appearance-switch' is enabled, switch theme once the system appearance is changed, and distinguish light and dark theme.
+It also works in `lacquer-auto-switch-mode`.
 
 #+BEGIN_SRC lisp
       (defcustom lacquer-theme-list '((monokai-theme monokai))
