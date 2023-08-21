@@ -268,6 +268,12 @@ When it's integer, switch themes for every some seconds"
   :group 'lacquer
   :type 'integer)
 
+(defcustom lacquer-auto-install t
+  "Automatically install missing mode packages."
+  :group 'lacquer
+  :type 'boolean)
+
+
 ;;;; Variables
 
 (defvar lacquer-started nil
@@ -344,8 +350,8 @@ CONFIG: theme config."
         (pop config)))
   
   `(progn
-     ;; (unless (package-installed-p (quote ,name))
-     ;;   (package-install (quote ,name)))
+	 (unless (and lacquer-auto-install (package-installed-p (quote ,name)))
+        (package-install (quote ,name)))
      (when (symbolp (quote ,load-name))
        (disable-theme (lacquer-cls-get lacquer-setting-instance "theme"))
        (load-theme (quote ,load-name) t)
