@@ -344,8 +344,8 @@ CONFIG: theme config."
         (pop config)))
   
   `(progn
-     (unless (package-installed-p (quote ,name))
-       (package-install (quote ,name)))
+     ;; (unless (package-installed-p (quote ,name))
+     ;;   (package-install (quote ,name)))
      (when (symbolp (quote ,load-name))
        (disable-theme (lacquer-cls-get lacquer-setting-instance "theme"))
        (load-theme (quote ,load-name) t)
